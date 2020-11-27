@@ -15,7 +15,7 @@ use app\models\File;
 /* @var $dataProvider ActiveDataProvider */
 /* @var $uploadForm string */
 
-$this->title = 'Файлы';
+$this->title = 'Почта России';
 $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs("
@@ -26,9 +26,7 @@ $this->registerJs("
 $clone = clone $dataProvider;
 $clone->pagination = false;
 ?>
-<div class="file-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="container">
 
     <p>
 
@@ -80,22 +78,6 @@ $clone->pagination = false;
                 'filter' => File::getStatuses(),
                 'value' => function (File $model) {
                     return $model->getStatusName();
-                },
-                'format' => 'html',
-            ],
-            [
-                'label' => 'Прогресс',
-                'value' => function (File $model) {
-                    $progress = $model->getProgress();
-                    $completeText = Html::tag('span', $progress . '% Complete', ['class' => 'sr-only']);
-                    return Html::tag('div', Html::tag('div', $completeText, [
-                        'class' => 'progress-bar  active ' . ($progress == 100 ? 'progress-bar-success' : 'progress-bar-striped'),
-                        'role' => 'progressbar',
-                        'aria-valuenow' => $progress,
-                        'aria-valuemin' => 0,
-                        'aria-valuemax' => 100,
-                        'style' => 'width: ' . $progress . '%',
-                    ]), ['class' => 'progress']);
                 },
                 'format' => 'html',
             ],

@@ -85,15 +85,8 @@ class FileController extends Controller {
         if ($model->user_id != $this->user->id) {
             throw new ForbiddenHttpException('У Вас нет доступа к указанному файлу!');
         }
-
-        $searchModel = new RowSearch(['file_id' => $model->id]);
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         return $this->render('view', [
             'model' => $model,
-            'rows' => $this->renderPartial('/row/index', [
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-            ]),
         ]);
     }
 
@@ -154,9 +147,7 @@ class FileController extends Controller {
 
                 if ($model->save()) {
                     $filePath = $this->fileService->getFilePath($model);
-                    if ($file->saveAs($filePath)) {
-                        Yii::$app->queue->push(new FileParserJob(['fileId' => $model->id]));
-                    }
+                    $file->saveAs($filePath);
                     $downloadUrl = urldecode(Url::to(['/file/download', 'id' => $model->id]));
                     $response['initialPreview'][] = Html::img($downloadUrl);
                     $response['initialPreviewConfig'][] = [

@@ -5,9 +5,9 @@ use yii\db\ColumnSchemaBuilder;
 use yii\base\NotSupportedException;
 
 /**
- * Handles the creation of table `{{%file}}`.
+ * Class m201127_172934_create_file
  */
-class m201113_174141_create_file_table extends Migration
+class m201127_172934_create_file extends Migration
 {
     /**
      * {@inheritdoc}
@@ -28,6 +28,9 @@ class m201113_174141_create_file_table extends Migration
             mkdir('files');
             chmod('files', 0777);
         }
+
+        $this->addColumn('{{%file}}', 'user_id', $this->integer()->notNull()->comment('ID пользователя'));
+        $this->addForeignKey('fk_file_user_id', '{{%file}}', ['user_id'], '"user"', ['id'], 'CASCADE', 'CASCADE');
     }
 
     /**
@@ -47,5 +50,4 @@ class m201113_174141_create_file_table extends Migration
     {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder('timestamp with time zone', $precision)->defaultExpression('NULL');
     }
-
 }

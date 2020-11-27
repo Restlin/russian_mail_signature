@@ -18,8 +18,6 @@ use yii\db\ActiveRecord;
  * @property int $user_id ID Пользователя
  * @property string $date_start Дата начала парсинга
  * @property string $date_end Дата завершения парсинга
- *
- * @property Row[] $rows строки файла
  */
 class File extends ActiveRecord {
 
@@ -95,15 +93,6 @@ class File extends ActiveRecord {
     }
 
     /**
-     * Gets query for [[Row]].
-     *
-     * @return \yii\db\ActiveQuery
-     */
-    public function getRows() {
-        return $this->hasMany(Row::class, ['file_id' => 'id']);
-    }
-
-    /**
      * @return string[]
      */
     public static function getStatuses(): array
@@ -126,31 +115,6 @@ class File extends ActiveRecord {
         $statuses = static::getStatuses();
         $status = $statuses[$this->status] ?? 'Неверный статус';
         return Html::tag('span', $status, ['class' => 'badge']);
-    }
-
-    /**
-     * @param array $statuses
-     * @return int
-     */
-    public function getCountRowsByStatuses(array $statuses): int
-    {
-        return Row::find()->andWhere(['file_id' => $this->id, 'status' => $statuses])->count();
-    }
-
-    /**
-     * @return int
-     */
-    public function getCountAllRows(): int
-    {
-        return Row::find()->andWhere(['file_id' => $this->id])->count();
-    }
-
-    public function getProgress(): int
-    {
-        if ($this->getCountAllRows() && $this->getCountRowsByStatuses([Row::STATUS_DONE, Row::STATUS_ERROR])) {
-            return floor(($this->getCountRowsByStatuses([Row::STATUS_DONE, Row::STATUS_ERROR]) / $this->getCountAllRows()) * 100);
-        }
-        return 0;
     }
 
 }

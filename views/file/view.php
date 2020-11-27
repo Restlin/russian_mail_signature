@@ -9,7 +9,6 @@ use app\models\Row;
 
 /* @var $this View */
 /* @var $model File */
-/* @var $rows string */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => 'Файлы', 'url' => ['index']];
@@ -60,7 +59,5 @@ YiiAsset::register($this);
             ],
         ],
     ]) ?>
-
-    <?= $rows ?>
 
 </div>
