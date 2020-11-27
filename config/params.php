@@ -11,4 +11,5 @@ return [
         'isAdmin' => true,
         'password' => 'xt,ehfirf',
     ],
+    'tokenLive' => 900,
 ];
