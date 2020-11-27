@@ -14,10 +14,14 @@
     },
     "minimum-stability": "stable",
     "require": {
+        "php": ">=7.4",
         "yiisoft/yii2": "~2.0.14",
         "yiisoft/yii2-bootstrap": "~2.0.0",
         "yiisoft/yii2-swiftmailer": "~2.0.0 || ~2.1.0",
-        "borales/yii2-phone-input": "~0.3.0"
+        "kartik-v/yii2-widget-fileinput": "~1.1.0",
+        "borales/yii2-phone-input": "~0.3.0",
+        "restlin/pjax-indicator": "^1.1",
+        "kartik-v/yii2-export": "^1.4"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
