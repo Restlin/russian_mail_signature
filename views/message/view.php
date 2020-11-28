@@ -6,6 +6,7 @@ use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Message */
+/* @var $user \app\models\User */
 
 $this->title = 'Почта России';
 \yii\web\YiiAsset::register($this);
@@ -13,6 +14,7 @@ $this->title = 'Почта России';
 ?>
 <div class="container">
 
+    <?php if ($user->isAdmin): ?>
     <p>
         <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
@@ -23,8 +25,10 @@ $this->title = 'Почта России';
             ],
         ]) ?>
     </p>
-    <p>
+    <?php endif; ?>
 
+    <?php if ($user->isAdmin && !$model->reply_to_message_id && !$model->reply): ?>
+    <p>
     <?php
     Modal::begin([
         'id' => 'modal-create-message',
@@ -38,15 +42,19 @@ $this->title = 'Почта России';
     Modal::end();
     ?>
     </p>
+    <?php elseif (!$model->reply_to_message_id && $model->reply): ?>
+    <p>
+        <?= Html::a('Посмотреть ответ', ['view', 'id' => $model->reply->id], ['class' => 'btn btn-success']) ?>
+    </p>
+
+    <?php endif; ?>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'message:ntext',
-            'user_id',
+            'message:html',
             'status',
-            'date_create',
+            'date_create:date',
         ],
     ]) ?>
 

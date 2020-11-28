@@ -93,6 +93,7 @@ class MessageController extends Controller
         }
 
         return $this->render('view', [
+            'user' => $user,
             'model' => $model,
             'files' => $this->renderPartial('/file/index-files', [
                 'searchModel' => $searchModel,
@@ -153,7 +154,7 @@ class MessageController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['/site/index']);
     }
 
     /**

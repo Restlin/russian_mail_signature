@@ -11,6 +11,7 @@ use app\models\Message;
  */
 class MessageSearch extends Message
 {
+    public $replyEmpty = false;
     /**
      * {@inheritdoc}
      */
@@ -18,7 +19,7 @@ class MessageSearch extends Message
     {
         return [
             [['id', 'user_id', 'status'], 'integer'],
-            [['message', 'date_create', 'reply_to_message_id'], 'safe'],
+            [['message', 'date_create', 'reply_to_message_id', 'replyEmpty'], 'safe'],
         ];
     }
 
@@ -40,7 +41,8 @@ class MessageSearch extends Message
      */
     public function search($params)
     {
-        $query = Message::find();
+        $query = Message::find()->alias('t');
+        $query->joinWith(['reply rr']);
 
         // add conditions that should always apply here
 
@@ -58,16 +60,19 @@ class MessageSearch extends Message
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'user_id' => $this->user_id,
-            'status' => $this->status,
-            'date_create' => $this->date_create,
+            't.user_id' => $this->user_id,
+            't.status' => $this->status,
+            't.date_create' => $this->date_create,
         ]);
 
+        if ($this->replyEmpty) {
+            $query->andWhere(['rr.id' => null]);
+        }
 
-        $query->andWhere(['reply_to_message_id' => $this->reply_to_message_id]);
 
-        $query->andFilterWhere(['ilike', 'message', $this->message]);
+        $query->andWhere(['t.reply_to_message_id' => $this->reply_to_message_id]);
+
+        $query->andFilterWhere(['ilike', 't.message', $this->message]);
 
         return $dataProvider;
     }

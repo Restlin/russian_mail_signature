@@ -75,7 +75,7 @@ class UserESignService extends BaseObject {
         $this->createESignDir($user);
         $eSignPath = $this->getESignPath($user);
         $caPath = $this->getCAPath();
-        exec("openssl req -nodes -newkey gost2012_512 -keyout $eSignPath/client.key -pkeyopt paramset:A -out $eSignPath/client.csr -subj \"/C=RU/ST=Udm/L=Izhevsk/O=IT/OU=animals/CN=user-{$user->id}\" -config $caPath/openssl.cnf ");
+        exec("openssl req -nodes -newkey gost2012_512 -keyout $eSignPath/client.key -pkeyopt paramset:A -out $eSignPath/client.csr -subj \"/C=RU/ST=Udm/L=Izhevsk/O=IT/OU=animals/CN=user-{$user->id}\" -config $caPath/openssl.cnf 2>&1", $output);
         exec("openssl ca -engine gost -keyfile $caPath/ca.key -cert $caPath/ca.crt -in $eSignPath/client.csr -out $eSignPath/client.crt -batch -config $caPath/openssl.cnf 2>&1", $output);
     }
 
