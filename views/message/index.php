@@ -42,6 +42,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'message:ntext',
             'status',
 
+            [
+                'class' => 'yii\grid\ActionColumn',
+                'controller' => 'message',
+            ],
         ],
     ]); ?>
 

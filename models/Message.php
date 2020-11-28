@@ -10,11 +10,13 @@ use Yii;
  * @property int $id ИД
  * @property string|null $message Обращение
  * @property int $user_id ID пользователя
+ * @property int $reply_to_message_id ID Обращение
  * @property int $status Статус обработки обращения
  * @property string|null $date_create Дата создания
  *
  * @property User $user
  * @property MessageFile[] $messageFiles
+ * @property Message[] $replies
  */
 class Message extends \yii\db\ActiveRecord
 {
@@ -35,10 +37,11 @@ class Message extends \yii\db\ActiveRecord
         return [
             [['message'], 'string'],
             [['user_id'], 'required'],
-            [['user_id', 'status'], 'default', 'value' => null],
-            [['user_id', 'status'], 'integer'],
+            [['user_id', 'status', 'reply_to_message_id'], 'default', 'value' => null],
+            [['user_id', 'status', 'reply_to_message_id'], 'integer'],
             [['date_create', 'files'], 'safe'],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['reply_to_message_id'], 'exist', 'skipOnError' => true, 'targetClass' => Message::className(), 'targetAttribute' => ['reply_to_message_id' => 'id']],
         ];
     }
 
@@ -75,5 +78,10 @@ class Message extends \yii\db\ActiveRecord
     public function getMessageFiles()
     {
         return $this->hasMany(MessageFile::className(), ['message_id' => 'id']);
+    }
+
+    public function getReplies()
+    {
+        return $this->hasMany(Message::class, ['reply_to_message_id' => 'id']);
     }
 }

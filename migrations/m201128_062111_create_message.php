@@ -20,8 +20,10 @@ class m201128_062111_create_message extends Migration
             'user_id' => $this->integer()->notNull()->comment('ID пользователя'),
             'status' => $this->integer()->notNull()->defaultValue(0)->comment('Статус обработки обращения'),
             'date_create' => $this->timestampWithTimezone()->comment('Дата создания'),
+            'reply_to_message_id' => $this->integer()->null()->comment('ID сообщения'),
         ]);
         $this->addForeignKey('fk_message_user_id', 'message', ['user_id'], '"user"', ['id'], 'CASCADE', 'CASCADE');
+        $this->addForeignKey('fk_reply_message_id', 'message', ['reply_to_message_id'], 'message', ['id'], 'CASCADE', 'CASCADE');
 
         $this->createTable('message_file', [
             'message_id' => $this->integer()->notNull()->comment('ID обращения'),

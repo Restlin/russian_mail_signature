@@ -117,4 +117,12 @@ class File extends ActiveRecord {
         return Html::tag('span', $status, ['class' => 'badge']);
     }
 
+    /**
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFileMessages()
+    {
+        return $this->hasMany(MessageFile::className(), ['file_id' => 'id']);
+    }
 }
