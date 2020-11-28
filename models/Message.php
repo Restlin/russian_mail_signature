@@ -16,6 +16,7 @@ use Yii;
  *
  * @property User $user
  * @property MessageFile[] $messageFiles
+ * @property File[] $files
  * @property Message[] $replies
  */
 class Message extends \yii\db\ActiveRecord
@@ -78,6 +79,11 @@ class Message extends \yii\db\ActiveRecord
     public function getMessageFiles()
     {
         return $this->hasMany(MessageFile::className(), ['message_id' => 'id']);
+    }
+
+    public function getFiles()
+    {
+        return $this->hasMany(File::class, ['id' => 'file_id'])->via('messageFiles');
     }
 
     public function getReplies()

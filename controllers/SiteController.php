@@ -101,7 +101,7 @@ class SiteController extends Controller {
                     $filePath = $this->fileService->getFilePath($file);
                     $upload_file->saveAs($filePath);
                 }
-
+                $model->link('files', $file);
             }
             return $this->redirect(['index']);
         }
