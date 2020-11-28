@@ -148,7 +148,6 @@ class FileController extends Controller {
 
                 if ($model->save()) {
                     $filePath = $this->fileService->getFilePath($model);
-                    $this->fileService->createDir($model);
                     $file->saveAs($filePath);
                     $downloadUrl = urldecode(Url::to(['/file/download', 'id' => $model->id]));
                     $response['initialPreview'][] = Html::img($downloadUrl);

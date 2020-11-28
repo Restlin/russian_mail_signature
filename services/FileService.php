@@ -72,7 +72,11 @@ final class FileService extends BaseObject {
      */
     public function getFileDir(File $file): string {
         $dir = intdiv($file->id, 1000) * 1000;
-        return Yii::getAlias($this->path . '/' . $dir . '/' . $file->id . '/');
+        $path = Yii::getAlias($this->path . '/' . $dir . '/' . $file->id . '/');
+        if (!file_exists($path)) {
+            FileHelper::createDirectory($path);
+        }
+        return $path;
     }
 
     /**
