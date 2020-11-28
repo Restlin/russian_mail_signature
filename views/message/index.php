@@ -18,21 +18,21 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="col-md-12" style="padding-bottom: 20px">
 
 
-    <?php
-    Modal::begin([
-        'id' => 'modal-create-message',
-        'header' => '<h3>Обращение</h3>',
-        'toggleButton' => ['label' => 'Написать обращение', 'class' => 'btn btn-primary'],
-        'size' => 'modal-lg',
-    ]);
+        <?php
+        Modal::begin([
+            'id' => 'modal-create-message',
+            'header' => '<h3>Обращение</h3>',
+            'toggleButton' => ['label' => 'Написать обращение', 'class' => 'btn btn-primary'],
+            'size' => 'modal-lg',
+        ]);
 
-    echo $createForm;
+        echo $createForm;
 
-    Modal::end();
-    ?>
+        Modal::end();
+        ?>
     </div>
 
-<?php
+    <?php
     $columns = [
         [
             'attribute' => 'message',
@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ];
 
-    if ($user->isAdmin) {
+    if ($user && $user->isAdmin) {
         $columns[] = [
             'attribute' => 'user.name',
             'label' => 'Пользователь',
@@ -59,15 +59,17 @@ $this->params['breadcrumbs'][] = $this->title;
             }
         ];
     }
-?>
+    ?>
 
 
     <?php Pjax::begin(); ?>
-    <?= GridView::widget([
+    <?=
+    GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
         'columns' => $columns
-    ]); ?>
+    ]);
+    ?>
 
     <?php Pjax::end(); ?>
 

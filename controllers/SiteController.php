@@ -107,6 +107,7 @@ class SiteController extends Controller {
                     'messages' => $this->renderPartial('/message/index', [
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,
+                        'user' => $user,
                         'createForm' => $this->renderPartial('/message/create', [
                             'model' => $model,
                         ]),
