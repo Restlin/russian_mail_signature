@@ -24,6 +24,11 @@ final class FileService extends BaseObject {
     private string $path = '';
 
     /**
+     * Путь до пользовательского ключа
+     */
+    private string $clientKeysPath = '@app/keys';
+
+    /**
      * FileService constructor.
      * @param array $params
      */
@@ -62,7 +67,7 @@ final class FileService extends BaseObject {
      */
     public function getFileDir(File $file): string {
         $dir = intdiv($file->id, 1000) * 1000;
-        return Yii::getAlias($this->path . '/' . $dir . '/');
+        return Yii::getAlias($this->path . '/' . $dir . '/' . $file->id . '/');
     }
 
     /**
@@ -90,6 +95,15 @@ final class FileService extends BaseObject {
         if (file_exists($fp)) {
             unlink($fp);
         }
+    }
+
+    public function sign(File $file): bool {
+        $fp = $this->getFilePath($file);
+        $fDir = $this->getFileDir($file);
+        $clientKeysPath = Yii::getAlias($this->clientKeysPath);
+        exec("openssl smime -engine gost -sign -in $fp -out $fDir/{$file->id}.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform SMIME");
+        $file->sign = file_get_contents($fDir . $file->id . '.sig');
+        return $file->save();
     }
 
 }

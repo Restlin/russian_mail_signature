@@ -42,13 +42,14 @@ class FileController extends Controller {
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'sign' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'delete', 'download', 'upload'],
+                        'actions' => ['index', 'view', 'delete', 'download', 'upload', 'sign'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -86,7 +87,7 @@ class FileController extends Controller {
             throw new ForbiddenHttpException('У Вас нет доступа к указанному файлу!');
         }
         return $this->render('view', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -104,7 +105,6 @@ class FileController extends Controller {
         }
 
         $model->delete();
-
         return $this->redirect(['index']);
     }
 
@@ -162,10 +162,21 @@ class FileController extends Controller {
             }
             return $response;
         }
-
-
-
         return $this->render('upload');
+    }
+
+    /**
+     * Подписать файл
+     * @param int $id
+     * @throws ForbiddenHttpException
+     */
+    public function actionSign(int $id) {
+        $model = $this->findModel($id);
+        if ($model->user_id != $this->user->id) {
+            throw new ForbiddenHttpException('У Вас нет доступа к указанному файлу!');
+        }
+        $this->fileService->sign($model);
+        $this->redirect(['view', 'id' => $model->id]);
     }
 
     /**
@@ -179,7 +190,6 @@ class FileController extends Controller {
         if (($model = File::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 

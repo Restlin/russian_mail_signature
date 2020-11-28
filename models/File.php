@@ -18,10 +18,9 @@ use yii\db\ActiveRecord;
  * @property int $user_id ID Пользователя
  * @property string $date_start Дата начала парсинга
  * @property string $date_end Дата завершения парсинга
+ * @property string $sign Подпись
  */
 class File extends ActiveRecord {
-
-    public $ids = [];
 
     const STATUS_NONE = 0;
     const STATUS_WORK = 1;
@@ -46,8 +45,7 @@ class File extends ActiveRecord {
             [['size', 'status'], 'default', 'value' => null],
             [['size', 'status', 'id'], 'integer'],
             [['name', 'mime'], 'string', 'max' => 255],
-            [['date_start', 'date_end'], 'string'],
-            [['ids'], 'safe'],
+            [['date_start', 'date_end', 'sign'], 'string'],
         ];
     }
 
@@ -64,7 +62,7 @@ class File extends ActiveRecord {
             'user_id' => 'ИД пользователя',
             'date_start' => 'Дата начала парсинга',
             'date_end' => 'Дата завершения парсинга',
-            'ids' => '',
+            'sign' => 'Подпись',
         ];
     }
 
@@ -74,7 +72,7 @@ class File extends ActiveRecord {
      */
     public function afterSave($insert, $changedAttributes) {
         parent::afterSave($insert, $changedAttributes);
-        // TODO вынести в EventDispatcher
+        // @todo вынести в EventDispatcher
         $container = Yii::$container;
         try {
             $service = $container->get(FileService::class);
@@ -86,7 +84,7 @@ class File extends ActiveRecord {
 
     public function afterDelete() {
         parent::afterDelete();
-        // TODO вынести в EventDispatcher
+        // @todo вынести в EventDispatcher
         $container = Yii::$container;
         try {
             $service = $container->get(FileService::class);
@@ -99,8 +97,7 @@ class File extends ActiveRecord {
     /**
      * @return string[]
      */
-    public static function getStatuses(): array
-    {
+    public static function getStatuses(): array {
         return [
             static::STATUS_NONE => 'В очереди',
             static::STATUS_WORK => 'В работе',
@@ -114,8 +111,7 @@ class File extends ActiveRecord {
     /**
      * @return string
      */
-    public function getStatusName(): string
-    {
+    public function getStatusName(): string {
         $statuses = static::getStatuses();
         $status = $statuses[$this->status] ?? 'Неверный статус';
         return Html::tag('span', $status, ['class' => 'badge']);
