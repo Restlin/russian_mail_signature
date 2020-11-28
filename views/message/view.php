@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Message */
@@ -12,8 +13,6 @@ $this->title = 'Почта России';
 ?>
 <div class="container">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
         <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
@@ -23,6 +22,21 @@ $this->title = 'Почта России';
                 'method' => 'post',
             ],
         ]) ?>
+    </p>
+    <p>
+
+    <?php
+    Modal::begin([
+        'id' => 'modal-create-message',
+        'header' => '<h3>Ответ</h3>',
+        'toggleButton' => ['label' => 'Ответить', 'class' => 'btn btn-primary'],
+        'size' => 'modal-lg',
+    ]);
+
+    echo $createReply;
+
+    Modal::end();
+    ?>
     </p>
 
     <?= DetailView::widget([
