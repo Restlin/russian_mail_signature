@@ -2,7 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\File;
 use app\models\FileSearch;
+use app\models\Message;
+use app\models\MessageSearch;
 use app\models\Row;
 use app\models\RowSearch;
 use app\models\UserSearch;
@@ -65,9 +68,30 @@ class SiteController extends Controller {
      * @return string
      */
     public function actionIndex() {
-        $identity = Yii::$app->user->identity;
+        $user = Yii::$app->user->identity->getUser();
+
+        $searchModel = new MessageSearch(['user_id' => $user->id]);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $model = new Message(['user_id' => $user->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) { // ЗАМЕНИТЬ НА SAVE
+
+            var_dump(Yii::$app->request->post());
+            die();
+            return $this->redirect(['index']);
+        }
+
         return $this->render('index', [
-            'user' => $identity->getUser(),
+            'user' => $user,
+            'messages' => $this->renderPartial('/message/index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'createForm' => $this->renderPartial('/message/create', [
+                    'model' => $model,
+                    'file' => new File(),
+                    //'uploadForm' => $this->renderPartial('/file/upload', ['file' => new File()]),
+                ]),
+            ]),
         ]);
     }
 
@@ -147,7 +171,7 @@ class SiteController extends Controller {
             'model' => $model,
         ]);
     }
-    public function actionPdf() {        
+    public function actionPdf() {
         $pdf = new \app\components\GostPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // set document information
@@ -191,7 +215,7 @@ class SiteController extends Controller {
          - To create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
          - To export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
          - To convert pfx certificate to pem: openssl pkcs12 -in tcpdf.pfx -out tcpdf.crt -nodes
-        */ 
+        */
 
         // set additional information
         $info = [
@@ -202,9 +226,9 @@ class SiteController extends Controller {
             ];
 
         // set document signature
-        //exec("openssl smime -engine gost -sign -in test.pdf -out test.sig -nodetach -binary -signer client.crt -inkey client.key -outform SMIME");        
+        //exec("openssl smime -engine gost -sign -in test.pdf -out test.sig -nodetach -binary -signer client.crt -inkey client.key -outform SMIME");
         $certificate = '../test.sig';
-        $pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, $info);        
+        $pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, $info);
 
         // set font
         $pdf->SetFont('helvetica', '', 12);
