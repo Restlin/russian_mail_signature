@@ -6,6 +6,7 @@ use yii\bootstrap\Modal;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Message */
+/* @var $user \app\models\User */
 
 $this->title = 'Почта России';
 \yii\web\YiiAsset::register($this);
@@ -13,7 +14,11 @@ $this->title = 'Почта России';
 ?>
 <div class="container">
 
+    <?php if ($user->isAdmin): ?>
     <p>
+        <?= Html::a('Согласовать', ['view', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('Подписать', ['view', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+
         <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
@@ -23,8 +28,10 @@ $this->title = 'Почта России';
             ],
         ]) ?>
     </p>
-    <p>
+    <?php endif; ?>
 
+    <?php if (!$model->reply_to_message_id): ?>
+    <p>
     <?php
     Modal::begin([
         'id' => 'modal-create-message',
@@ -38,6 +45,7 @@ $this->title = 'Почта России';
     Modal::end();
     ?>
     </p>
+    <?php endif; ?>
 
     <?= DetailView::widget([
         'model' => $model,

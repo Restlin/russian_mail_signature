@@ -93,6 +93,7 @@ class MessageController extends Controller
         }
 
         return $this->render('view', [
+            'user' => $user,
             'model' => $model,
             'files' => $this->renderPartial('/file/index-files', [
                 'searchModel' => $searchModel,

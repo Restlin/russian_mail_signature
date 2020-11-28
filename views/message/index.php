@@ -35,16 +35,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php Pjax::begin(); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        //'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'message:ntext',
-            'status',
-
             [
-                'class' => 'yii\grid\ActionColumn',
-                'controller' => 'message',
+                'attribute' => 'message',
+                'value' => function ($model) {
+                    return Html::a('Обращение №' . $model->id, ['/message/view', 'id' => $model->id]);
+                },
+                'format' => 'html',
+            ],
+            [
+                'attribute' => 'status',
+                'value' => function ($model) {
+                    return 'В работе';
+                },
             ],
         ],
     ]); ?>
