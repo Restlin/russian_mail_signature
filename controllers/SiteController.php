@@ -90,18 +90,11 @@ class SiteController extends Controller {
         $model = new Message(['user_id' => $user->id, 'status' => 0]);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             $model->upload_files = UploadedFile::getInstances($model, 'upload_files');
-            foreach ($model->upload_files as $upload_file) {
-                $file = new File();
-                $file->name = $upload_file->name;
-                $file->mime = mime_content_type($upload_file->tempName);
-                $file->size = filesize($upload_file->tempName);
-                $file->status = File::STATUS_NONE;
-                $file->user_id = $user->id;
-                if ($file->save()) {
-                    $filePath = $this->fileService->getFilePath($file);
-                    $upload_file->saveAs($filePath);
+            foreach ($model->upload_files as $uploadedFile) {
+                $file = $this->fileService->createFile($uploadedFile, $user);
+                if($file->id) {
+                    $model->link('files', $file);
                 }
-                $model->link('files', $file);
             }
             return $this->redirect(['index']);
         }

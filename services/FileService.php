@@ -4,6 +4,7 @@ namespace app\services;
 
 use Yii;
 use app\models\File;
+use app\models\User;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
 use yii\helpers\FileHelper;
@@ -51,18 +52,6 @@ final class FileService extends BaseObject {
     }
 
     /**
-     * Проверка существования директории и создание
-     * @param File $file
-     * @throws Exception
-     */
-    public function createDir(File $file): void {
-        $path = $this->getFileDir($file);
-        if (!file_exists($path)) {
-            FileHelper::createDirectory($path);
-        }
-    }
-
-    /**
      * Путь до файла
      * @param File $file
      * @return string
@@ -78,7 +67,11 @@ final class FileService extends BaseObject {
      */
     public function getFileDir(File $file): string {
         $dir = intdiv($file->id, 1000) * 1000;
-        return Yii::getAlias($this->path . '/' . $dir . '/' . $file->id . '/');
+        $path = Yii::getAlias($this->path . '/' . $dir . '/' . $file->id . '/');
+        if (!file_exists($path)) {
+            FileHelper::createDirectory($path);
+        }
+        return $path;
     }
 
     /**
@@ -132,4 +125,18 @@ final class FileService extends BaseObject {
         return $output;
     }
 
+    public function createFile(\yii\web\UploadedFile $uploadedFile, User $user) {
+        $file = new File();
+        $file->name = $uploadedFile->name;
+        $file->mime = mime_content_type($uploadedFile->tempName);
+        $file->size = filesize($uploadedFile->tempName);
+        $file->status = File::STATUS_NONE;
+        $file->user_id = $user->id;
+        if ($file->save()) {
+            $filePath = $this->getFilePath($file);
+            $uploadedFile->saveAs($filePath);
+            exec("libreoffice --convert-to pdf $filePath");
+        }
+        return $file;
+    }
 }
