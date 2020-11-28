@@ -44,13 +44,14 @@ class UserController extends Controller {
                 'actions' => [
                     'delete' => ['POST'],
                     'create-e-sign' => ['POST'],
+                    'revoke-e-sign' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['view', 'change-pwd', 'change-pwd-validate', 'update', 'create-e-sign'],
+                        'actions' => ['view', 'change-pwd', 'change-pwd-validate', 'update', 'create-e-sign', 'revoke-e-sign'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -95,6 +96,7 @@ class UserController extends Controller {
         }
         return $this->render('view', [
                     'model' => $model,
+                    'eSign' => $this->userESignService->get($model),
         ]);
     }
 
@@ -212,6 +214,15 @@ class UserController extends Controller {
             throw new ForbiddenHttpException('У Вас нет доступа к данному профилю!');
         }
         $this->userESignService->create($model);
+        return $this->redirect(['/user/view', 'id' => $this->user->id]);
+    }
+
+    public function actionRevokeESign(int $id) {
+        $model = $this->findModel($id);
+        if ($model->id != $this->user->id && !$model->isAdmin) {
+            throw new ForbiddenHttpException('У Вас нет доступа к данному профилю!');
+        }
+        $this->userESignService->revoke($model);
         return $this->redirect(['/user/view', 'id' => $this->user->id]);
     }
 

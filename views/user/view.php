@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\models\User;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\User */
@@ -27,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
         <?php } ?>
         <?= Html::a('Создать ЭП', ['create-e-sign', 'id' => $model->id], ['class' => 'btn btn-success', 'data-method' => 'post']) ?>
+        <?= /* Html::a('Отозвать ЭП', ['revoke-e-sign', 'id' => $model->id], ['class' => 'btn btn-danger', 'data-method' => 'post']) */ '' ?>
     </p>
     <?=
     DetailView::widget([
@@ -37,6 +39,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'patronymic',
             'phone',
             'email:email',
+            [
+                'attribute' => 'ESign',
+                'label' => 'Подпись',
+                'format' => 'raw',
+                'value' => $eSign ? '<pre>' . $eSign . '</pre>' : '',
+                'visible' => (bool) $eSign
+            ]
         ],
     ])
     ?>

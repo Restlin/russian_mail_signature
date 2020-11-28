@@ -80,7 +80,7 @@ class SiteController extends Controller {
     public function actionIndex() {
         $user = Yii::$app->user->identity->getUser();
         if ($user->isAdmin) {
-            $searchModel = new MessageSearch(['reply_to_message_id' => null/*, 'replyEmpty' => true*/]);
+            $searchModel = new MessageSearch(['reply_to_message_id' => null/* , 'replyEmpty' => true */]);
         } else {
             $searchModel = new MessageSearch(['user_id' => $user->id, 'reply_to_message_id' => null]);
         }
@@ -91,7 +91,7 @@ class SiteController extends Controller {
             $model->upload_files = UploadedFile::getInstances($model, 'upload_files');
             foreach ($model->upload_files as $uploadedFile) {
                 $file = $this->fileService->createFile($uploadedFile, $user);
-                if($file->id) {
+                if ($file->id) {
                     $model->link('files', $file);
                 }
             }
@@ -200,7 +200,6 @@ class SiteController extends Controller {
 
         // set default header data
         //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, 'Обращение с квалифицированной электронной подписью', PDF_HEADER_STRING);
-
         // set header and footer fonts
         $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
         $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
