@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ];
 
-    if ($user && $user->isAdmin) {
+    if ($user->isAdmin) {
         $columns[] = [
             'attribute' => 'user.name',
             'label' => 'Пользователь',
