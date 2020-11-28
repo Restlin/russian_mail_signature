@@ -57,6 +57,11 @@ YiiAsset::register($this);
                 'attribute' => 'signCheck',
                 'value' => fn(File $model) => $fileService->checkSign($model),
                 'format' => 'raw',
+            ],
+            [
+                'attribute' => 'sign',
+                'format' => 'raw',
+                'value' => fn(File $model) => Html::a('скачать', ['/file/get', 'id' => $model->id, 'sign' => true]),
             ]
         ],
     ])

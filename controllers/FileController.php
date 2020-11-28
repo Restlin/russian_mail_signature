@@ -49,7 +49,7 @@ class FileController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'delete', 'download', 'upload', 'sign'],
+                        'actions' => ['index', 'view', 'delete', 'download', 'upload', 'sign', 'get'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -192,6 +192,24 @@ class FileController extends Controller {
             return $model;
         }
         throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
+    }
+
+    public function actionGet(int $id, bool $sign = false) {
+        $model = $this->findModel($id);
+        if ($model->user_id != $this->user->id) {
+            throw new ForbiddenHttpException('У Вас нет доступа к указанному файлу!');
+        }
+        $filePath = $this->fileService->getFilePath($model);
+        if ($sign) {
+            $filePath = $filePath . '.sig';
+            $mime = 'application/x-pkcs7-mime';
+        } else {
+            $mime = $model->mime;
+        }
+        Yii::$app->response->xSendFile($filePath, $model->name, [
+            'mimeType' => $mime,
+            'inline' => false
+        ]);
     }
 
 }
