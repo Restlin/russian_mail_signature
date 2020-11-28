@@ -62,6 +62,7 @@ class File extends ActiveRecord {
             'date_start' => 'Дата начала парсинга',
             'date_end' => 'Дата завершения парсинга',
             'sign' => 'Подпись',
+            'signCheck' => 'Результат проверки подписи',
         ];
     }
 

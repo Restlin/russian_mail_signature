@@ -88,6 +88,7 @@ class FileController extends Controller {
         }
         return $this->render('view', [
                     'model' => $model,
+                    'fileService' => $this->fileService,
         ]);
     }
 

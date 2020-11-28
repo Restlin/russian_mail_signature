@@ -53,7 +53,11 @@ YiiAsset::register($this);
               'value' => $model->getStatusName(),
               'format' => 'html',
               ], */
-            'sign',
+            [
+                'attribute' => 'signCheck',
+                'value' => fn(File $model) => $fileService->checkSign($model),
+                'format' => 'raw',
+            ]
         ],
     ])
     ?>
