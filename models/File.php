@@ -21,6 +21,8 @@ use yii\db\ActiveRecord;
  */
 class File extends ActiveRecord {
 
+    public $ids = [];
+
     const STATUS_NONE = 0;
     const STATUS_WORK = 1;
     const STATUS_DONE = 2;
@@ -40,11 +42,12 @@ class File extends ActiveRecord {
      */
     public function rules() {
         return [
-            [['name', 'mime', 'user_id'], 'required'],
+            //[['name', 'mime', 'user_id'], 'required'],
             [['size', 'status'], 'default', 'value' => null],
             [['size', 'status', 'id'], 'integer'],
             [['name', 'mime'], 'string', 'max' => 255],
             [['date_start', 'date_end'], 'string'],
+            [['ids'], 'safe'],
         ];
     }
 
@@ -61,6 +64,7 @@ class File extends ActiveRecord {
             'user_id' => 'ИД пользователя',
             'date_start' => 'Дата начала парсинга',
             'date_end' => 'Дата завершения парсинга',
+            'ids' => '',
         ];
     }
 
