@@ -19,9 +19,7 @@ $this->title = 'Почта России';
     <?= $form->field($model, 'message')->textarea(['rows' => 6]) ?>
 
     <?= $form->field($model, 'files[]')->widget(FileInput::class, [
-        'name' => 'files',
         'options' => [
-            'id' => 'files-upload',
             'multiple' => true,
         ],
         'pluginOptions' => [
@@ -33,12 +31,6 @@ $this->title = 'Почта России';
             'showUpload' => false,
             'disabledPreviewExtensions' => null,
             'hideThumbnailContent' => true,
-            /*'fileActionSettings' => [
-                'showZoom' => false,
-                'showDrag' => false,
-                'downloadClass' => 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-                'removeClass' => 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            ],*/
             'initialPreviewAsData' => true,
             'initialPreviewFileType' => 'image',
             'overwriteInitial' => false,
