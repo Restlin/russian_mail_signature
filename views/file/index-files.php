@@ -16,27 +16,33 @@ use app\models\File;
 /* @var $uploadForm string */
 
 $this->title = 'Почта России';
-
 ?>
 
-    <h1>Файлы</h1>
-    <?php Pjax::begin(['id' => 'grid-view-files']); ?>
-    <br>
-    <?=
-    GridView::widget([
-        'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
-        'columns' => [
-            [
-                'attribute' => 'name',
-                'value' => function (File $model) {
-                    return Html::a($model->name, ['file/view', 'id' => $model->id]);
-                },
-                'format' => 'html',
-            ],
+<h1>Файлы</h1>
+<?php Pjax::begin(['id' => 'grid-view-files']); ?>
+<br>
+<?=
+GridView::widget([
+    'dataProvider' => $dataProvider,
+    //'filterModel' => $searchModel,
+    'columns' => [
+        [
+            'attribute' => 'name',
+            'value' => function (File $model) {
+                return Html::a($model->name, ['file/view', 'id' => $model->id]);
+            },
+            'format' => 'html',
         ],
-    ]);
-    ?>
+        [
+            'attribute' => 'signCheck',
+            'value' => function (File $model) use ($fileService) {
+                return $fileService->checkSign($model);
+            },
+            'format' => 'raw',
+        ],
+    ],
+]);
+?>
 
-    <?php Pjax::end(); ?>
+<?php Pjax::end(); ?>
 
