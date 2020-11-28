@@ -79,8 +79,8 @@ class SiteController extends Controller {
      */
     public function actionIndex() {
         $user = Yii::$app->user->identity->getUser();
-        if (!$user->isAdmin) {
-            $searchModel = new MessageSearch(['reply_to_message_id' => null, 'replyEmpty' => true]);
+        if ($user->isAdmin) {
+            $searchModel = new MessageSearch(['reply_to_message_id' => null/*, 'replyEmpty' => true*/]);
         } else {
             $searchModel = new MessageSearch(['user_id' => $user->id, 'reply_to_message_id' => null]);
         }
@@ -106,6 +106,7 @@ class SiteController extends Controller {
                         'createForm' => $this->renderPartial('/message/create', [
                             'model' => $model,
                         ]),
+                        'user' => $user,
                     ]),
         ]);
     }
