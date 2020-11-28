@@ -32,26 +32,41 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
     </div>
 
+<?php
+    $columns = [
+        [
+            'attribute' => 'message',
+            'value' => function ($model) {
+                return Html::a('Обращение №' . $model->id, ['/message/view', 'id' => $model->id]);
+            },
+            'format' => 'html',
+        ],
+        [
+            'attribute' => 'status',
+            'value' => function ($model) {
+                return $model->getStatusName();
+            },
+            'format' => 'html',
+        ],
+    ];
+
+    if ($user->isAdmin) {
+        $columns[] = [
+            'attribute' => 'user.name',
+            'label' => 'Пользователь',
+            'value' => function ($model) {
+                return "{$model->user->name} {$model->user->surname} {$model->user->patronymic}";
+            }
+        ];
+    }
+?>
+
+
     <?php Pjax::begin(); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
-        'columns' => [
-            [
-                'attribute' => 'message',
-                'value' => function ($model) {
-                    return Html::a('Обращение №' . $model->id, ['/message/view', 'id' => $model->id]);
-                },
-                'format' => 'html',
-            ],
-            [
-                'attribute' => 'status',
-                'value' => function ($model) {
-                    return $model->getStatusName();
-                },
-                'format' => 'html',
-            ],
-        ],
+        'columns' => $columns
     ]); ?>
 
     <?php Pjax::end(); ?>

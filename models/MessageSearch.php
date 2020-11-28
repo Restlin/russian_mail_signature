@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Message;
+use yii\data\Sort;
 
 /**
  * MessageSearch represents the model behind the search form of `app\models\Message`.
@@ -46,8 +47,16 @@ class MessageSearch extends Message
 
         // add conditions that should always apply here
 
+        $sort = new Sort([
+            'attributes' => [
+                'id', 'user_id', 'status'
+            ],
+            'defaultOrder' => ['status' => SORT_DESC],
+        ]);
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => $sort,
         ]);
 
         $this->load($params);
