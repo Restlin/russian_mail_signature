@@ -30,33 +30,35 @@ $clone->pagination = false;
 
     <p>
 
-    <?php
-    Modal::begin([
-        'id' => 'modal-upload-files',
-        'header' => '<h3>Загрузка файлов</h3>',
-        'toggleButton' => ['label' => 'Загрузить файлы', 'class' => 'btn btn-success'],
-    ]);
+        <?php
+        Modal::begin([
+            'id' => 'modal-upload-files',
+            'header' => '<h3>Загрузка файлов</h3>',
+            'toggleButton' => ['label' => 'Загрузить файлы', 'class' => 'btn btn-success'],
+        ]);
 
-    echo $uploadForm;
+        echo $uploadForm;
 
-    Modal::end();
-    ?>
+        Modal::end();
+        ?>
 
     </p>
 
-    <?= ExportMenu::widget([
+    <?=
+    ExportMenu::widget([
         'dataProvider' => $clone,
         'exportConfig' => [
             ExportMenu::FORMAT_HTML => false,
             ExportMenu::FORMAT_TEXT => false,
             ExportMenu::FORMAT_PDF => false,
             ExportMenu::FORMAT_EXCEL => false,
-            /*ExportMenu::FORMAT_CSV => false,*/
+            /* ExportMenu::FORMAT_CSV => false, */
             ExportMenu::FORMAT_EXCEL_X => [
                 'label' => 'XLSX',
             ],
         ],
-    ]); ?>
+    ]);
+    ?>
 
     <?php Pjax::begin(['id' => 'grid-view-files']); ?>
     <br>
@@ -80,6 +82,13 @@ $clone->pagination = false;
                     return $model->getStatusName();
                 },
                 'format' => 'html',
+            ],
+            [
+                'attribute' => 'signCheck',
+                'value' => function (File $model) use ($fileService) {
+                    return $fileService->checkSign($model);
+                },
+                'format' => 'raw',
             ],
             [
                 'class' => yii\grid\ActionColumn::class,

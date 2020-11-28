@@ -54,8 +54,13 @@ YiiAsset::register($this);
               'format' => 'html',
               ], */
             [
+                'attribute' => 'скачать',
+                'format' => 'raw',
+                'value' => Html::a($model->name, ['/file/get', 'id' => $model->id])
+            ],
+            [
                 'attribute' => 'signCheck',
-                'value' => fn(File $model) => $fileService->checkSign($model),
+                'value' => $fileService->checkSign($model),
                 'format' => 'raw',
             ],
             [

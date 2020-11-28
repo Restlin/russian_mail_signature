@@ -2,13 +2,15 @@
 
 namespace app\services;
 
-use Yii;
 use app\models\File;
+use app\models\User;
+use app\services\UserESignService;
+use Yii;
 use yii\base\BaseObject;
+use yii\base\Exception;
 use yii\base\InvalidArgumentException;
 use yii\helpers\FileHelper;
-use yii\base\Exception;
-use app\services\UserESignService;
+use yii\web\UploadedFile;
 
 final class FileService extends BaseObject {
 
@@ -134,7 +136,7 @@ final class FileService extends BaseObject {
         return $output;
     }
 
-    public function createFile(\yii\web\UploadedFile $uploadedFile, User $user) {
+    public function createFile(UploadedFile $uploadedFile, User $user) {
         $file = new File();
         $file->name = $uploadedFile->name;
         $file->mime = mime_content_type($uploadedFile->tempName);

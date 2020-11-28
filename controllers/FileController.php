@@ -72,6 +72,7 @@ class FileController extends Controller {
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
                     'uploadForm' => $this->renderPartial('upload'),
+                    'fileService' => $this->fileService
         ]);
     }
 
