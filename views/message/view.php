@@ -47,13 +47,19 @@ $this->title = 'Почта России';
         <?= Html::a('Посмотреть ответ', ['view', 'id' => $model->reply->id], ['class' => 'btn btn-success']) ?>
     </p>
 
+    <?php elseif ($user->isAdmin && $model->reply_to_message_id): ?>
+
+    <p>
+        <?= Html::a('Согласовать и отправить', ['send', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+    </p>
+
     <?php endif; ?>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'message:html',
-            'status',
+            'statusName:html',
             'date_create:date',
         ],
     ]) ?>
