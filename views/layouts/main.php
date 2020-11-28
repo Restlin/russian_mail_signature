@@ -31,11 +31,29 @@ AppAsset::register($this);
                     'class' => 'navbar-head navbar-fixed-top',
                 ],
             ]);
+            if (Yii::$app->user->isGuest) {
+                $menuItems = [
+                    ['label' => 'Войти', 'url' => ['/site/login']]
+                ];
+            } else {
+                $user = Yii::$app->user->getIdentity()->getUser();
+                $menuItems = [
+                    [
+                        'label' => $user->name . ' ' . $user->patronymic . ' ' . $user->surname,
+                        'items' => [
+                            ['label' => 'Настройки', 'url' => ['/user/view', 'id' => $user->id]],
+                            ['label' => 'Выход', 'url' => ['/site/logout']],
+                        ],
+                        'linkOptions' => ['calss' => 'top-in-menu']
+                    ],
+                ];
+            }
+
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
                     ['label' => 'Главная', 'url' => ['/site/index']],
-                    Yii::$app->user->isGuest ? (['label' => 'Войти', 'url' => ['/site/login']]) : (['label' => 'Выход', 'url' => ['/site/logout']])
+                    ...$menuItems
                 ],
             ]);
             NavBar::end();

@@ -4,29 +4,29 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\File;
-use yii\data\Sort;
+use app\models\Message;
 
 /**
- * FileSearch represents the model behind the search form of `app\models\File`.
+ * MessageSearch represents the model behind the search form of `app\models\Message`.
  */
-class FileSearch extends File {
-
-    public $messageId = null;
+class MessageSearch extends Message
+{
     /**
      * {@inheritdoc}
      */
-    public function rules() {
+    public function rules()
+    {
         return [
-            [['id', 'size', 'status', 'user_id', 'messageId'], 'integer'],
-            [['name', 'mime'], 'safe'],
+            [['id', 'user_id', 'status'], 'integer'],
+            [['message', 'date_create', 'reply_to_message_id'], 'safe'],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function scenarios() {
+    public function scenarios()
+    {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -38,22 +38,14 @@ class FileSearch extends File {
      *
      * @return ActiveDataProvider
      */
-    public function search($params) {
-        $query = File::find();
-        $query->joinWith(['fileMessage mm']);
+    public function search($params)
+    {
+        $query = Message::find();
 
         // add conditions that should always apply here
 
-        $sort = new Sort([
-            'attributes' => [
-                'id', 'size', 'status', 'user_id', 'name', 'mime'
-            ],
-            'defaultOrder' => ['id' => SORT_DESC],
-        ]);
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => $sort,
         ]);
 
         $this->load($params);
@@ -67,16 +59,16 @@ class FileSearch extends File {
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'size' => $this->size,
-            'status' => $this->status,
             'user_id' => $this->user_id,
-            'mm.message_id' => $this->messageId,
+            'status' => $this->status,
+            'date_create' => $this->date_create,
         ]);
 
-        $query->andFilterWhere(['ilike', 'name', $this->name])
-                ->andFilterWhere(['ilike', 'mime', $this->mime]);
+
+        $query->andWhere(['reply_to_message_id' => $this->reply_to_message_id]);
+
+        $query->andFilterWhere(['ilike', 'message', $this->message]);
 
         return $dataProvider;
     }
-
 }

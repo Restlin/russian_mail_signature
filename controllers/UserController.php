@@ -41,12 +41,12 @@ class UserController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['profile-form', 'view', 'change-pwd', 'change-pwd-validate'],
+                        'actions' => ['view', 'change-pwd', 'change-pwd-validate', 'update'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                     [
-                        'actions' => ['index', 'update', 'delete', 'create'],
+                        'actions' => ['index', 'delete', 'create'],
                         'allow' => true,
                         'roles' => ['@'],
                         'matchCallback' => fn() => $this->user && $this->user->isAdmin,
@@ -67,7 +67,6 @@ class UserController extends Controller {
     public function actionIndex() {
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
@@ -81,8 +80,12 @@ class UserController extends Controller {
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id) {
+        $model = $this->findModel($id);
+        if ($model->id != $this->user->id && !$model->isAdmin) {
+            throw new ForbiddenHttpException('У Вас нет доступа к данному профилю!');
+        }
         return $this->render('view', [
-                    'model' => $this->findModel($id),
+                    'model' => $model,
         ]);
     }
 
@@ -93,11 +96,9 @@ class UserController extends Controller {
      */
     public function actionCreate() {
         $model = new User();
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
         return $this->render('create', [
                     'model' => $model,
         ]);
@@ -112,11 +113,9 @@ class UserController extends Controller {
      */
     public function actionUpdate($id) {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
         return $this->render('update', [
                     'model' => $model,
         ]);

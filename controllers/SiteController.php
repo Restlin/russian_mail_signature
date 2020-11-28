@@ -2,23 +2,40 @@
 
 namespace app\controllers;
 
+use app\models\File;
 use app\models\FileSearch;
+use app\models\Message;
+use app\models\MessageSearch;
 use app\models\Row;
 use app\models\RowSearch;
+use app\models\User;
 use app\models\UserSearch;
 use app\security\ForgotForm;
 use app\security\LoginForm;
 use app\security\RegistrationForm;
 use app\security\ResetPwdForm;
+use app\services\FileService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\web\UploadedFile;
 
 class SiteController extends Controller {
+    private ?User $user = null;
+    private FileService $fileService;
 
+    public function __construct($id, $module,
+                                FileService $fileService,
+                                $config = []) {
+        $this->fileService = $fileService;
+        $this->user = Yii::$app->user->getIsGuest() ? null : Yii::$app->user->identity->getUser();
+        parent::__construct($id, $module, $config);
+    }
     /**
      * {@inheritdoc}
      */
@@ -65,9 +82,39 @@ class SiteController extends Controller {
      * @return string
      */
     public function actionIndex() {
-        $identity = Yii::$app->user->identity;
+        $user = Yii::$app->user->identity->getUser();
+
+        $searchModel = new MessageSearch(['user_id' => $user->id, 'reply_to_message_id' => null]);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        $model = new Message(['user_id' => $user->id, 'status' => 0]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->upload_files = UploadedFile::getInstances($model, 'upload_files');
+            foreach ($model->upload_files as $upload_file) {
+                $file = new File();
+                $file->name = $upload_file->name;
+                $file->mime = mime_content_type($upload_file->tempName);
+                $file->size = filesize($upload_file->tempName);
+                $file->status = File::STATUS_NONE;
+                $file->user_id = $user->id;
+                if ($file->save()) {
+                    $filePath = $this->fileService->getFilePath($file);
+                    $upload_file->saveAs($filePath);
+                }
+                $model->link('files', $file);
+            }
+            return $this->redirect(['index']);
+        }
+
         return $this->render('index', [
-            'user' => $identity->getUser(),
+            'user' => $user,
+            'messages' => $this->renderPartial('/message/index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'createForm' => $this->renderPartial('/message/create', [
+                    'model' => $model,
+                ]),
+            ]),
         ]);
     }
 
