@@ -59,18 +59,6 @@ class MessageController extends Controller
         ]);
     }
 
-    public function actionSend($id)
-    {
-        $model = $this->findModel($id);
-        $model->status = Message::STATUS_DONE;
-        if ($model->save()) {
-            $base = $this->findModel($model->reply_to_message_id);
-            $base->status = Message::STATUS_DONE;
-            $base->save();
-        }
-        return $this->redirect(['view', 'id' => $model->id]);
-    }
-
     /**
      * Displays a single Message model.
      * @param integer $id
@@ -85,7 +73,7 @@ class MessageController extends Controller
         $dataProvider = $searchModel->search([]);
 
         $model = $this->findModel($id);
-        $replyModel = new Message(['user_id' => $user->id, 'status' => Message::STATUS_WORK, 'reply_to_message_id' => $model->id]);
+        $replyModel = new Message(['user_id' => $user->id, 'status' => 0, 'reply_to_message_id' => $model->id]);
         if ($replyModel->load(Yii::$app->request->post()) && $replyModel->save()) {
             $replyModel->upload_files = UploadedFile::getInstances($model, 'upload_files');
             foreach ($replyModel->upload_files as $upload_file) {
@@ -98,18 +86,13 @@ class MessageController extends Controller
                 if ($file->save()) {
                     $filePath = $this->fileService->getFilePath($file);
                     $upload_file->saveAs($filePath);
-                    $replyModel->link('files', $file);
                 }
+                $replyModel->link('files', $file);
             }
-            $replyModel->status = Message::STATUS_IS_DONE;
-            $replyModel->save();
-            $model->status = Message::STATUS_WORK;
-            $model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('view', [
-            'user' => $user,
             'model' => $model,
             'files' => $this->renderPartial('/file/index-files', [
                 'searchModel' => $searchModel,
@@ -170,7 +153,7 @@ class MessageController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['/site/index']);
+        return $this->redirect(['index']);
     }
 
     /**
