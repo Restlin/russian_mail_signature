@@ -42,7 +42,6 @@ class File extends ActiveRecord {
     public function rules() {
         return [
             //[['name', 'mime', 'user_id'], 'required'],
-            [['size', 'status'], 'default', 'value' => null],
             [['size', 'status', 'id'], 'integer'],
             [['name', 'mime'], 'string', 'max' => 255],
             [['date_start', 'date_end', 'sign'], 'string'],
@@ -106,8 +105,12 @@ class File extends ActiveRecord {
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFileMessage()
-    {
-        return $this->hasOne(MessageFile::className(), ['file_id' => 'id']);
+    public function getFileMessage() {
+        return $this->hasOne(MessageFile::class, ['file_id' => 'id']);
     }
+
+    public function getUser() {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
 }

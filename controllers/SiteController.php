@@ -3,13 +3,9 @@
 namespace app\controllers;
 
 use app\models\File;
-use app\models\FileSearch;
 use app\models\Message;
 use app\models\MessageSearch;
-use app\models\Row;
-use app\models\RowSearch;
 use app\models\User;
-use app\models\UserSearch;
 use app\security\ForgotForm;
 use app\security\LoginForm;
 use app\security\RegistrationForm;
@@ -18,24 +14,24 @@ use app\services\FileService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
 
 class SiteController extends Controller {
+
     private ?User $user = null;
     private FileService $fileService;
 
     public function __construct($id, $module,
-                                FileService $fileService,
-                                $config = []) {
+            FileService $fileService,
+            $config = []) {
         $this->fileService = $fileService;
         $this->user = Yii::$app->user->getIsGuest() ? null : Yii::$app->user->identity->getUser();
         parent::__construct($id, $module, $config);
     }
+
     /**
      * {@inheritdoc}
      */
@@ -55,7 +51,7 @@ class SiteController extends Controller {
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    //'logout' => ['post'],
+                //'logout' => ['post'],
                 ],
             ],
         ];
@@ -100,14 +96,14 @@ class SiteController extends Controller {
         }
 
         return $this->render('index', [
-            'user' => $user,
-            'messages' => $this->renderPartial('/message/index', [
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-                'createForm' => $this->renderPartial('/message/create', [
-                    'model' => $model,
-                ]),
-            ]),
+                    'user' => $user,
+                    'messages' => $this->renderPartial('/message/index', [
+                        'searchModel' => $searchModel,
+                        'dataProvider' => $dataProvider,
+                        'createForm' => $this->renderPartial('/message/create', [
+                            'model' => $model,
+                        ]),
+                    ]),
         ]);
     }
 
@@ -128,7 +124,7 @@ class SiteController extends Controller {
 
         $model->password = '';
         return $this->render('login', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -153,7 +149,7 @@ class SiteController extends Controller {
         }
 
         return $this->render('registration', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -166,7 +162,7 @@ class SiteController extends Controller {
             return $this->render('forgot-send');
         }
         return $this->render('forgot', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -184,9 +180,10 @@ class SiteController extends Controller {
             return $this->redirect(['/site/login']);
         }
         return $this->render('reset-pwd', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
+
     public function actionPdf() {
         $pdf = new \app\components\GostPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -219,19 +216,19 @@ class SiteController extends Controller {
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         // set some language-dependent strings (optional)
-        if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-            require_once(dirname(__FILE__).'/lang/eng.php');
+        if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+            require_once(dirname(__FILE__) . '/lang/eng.php');
             $pdf->setLanguageArray($l);
         }
 
         // ---------------------------------------------------------
 
         /*
-        NOTES:
-         - To create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
-         - To export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
-         - To convert pfx certificate to pem: openssl pkcs12 -in tcpdf.pfx -out tcpdf.crt -nodes
-        */
+          NOTES:
+          - To create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
+          - To export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
+          - To convert pfx certificate to pem: openssl pkcs12 -in tcpdf.pfx -out tcpdf.crt -nodes
+         */
 
         // set additional information
         $info = [
@@ -239,7 +236,7 @@ class SiteController extends Controller {
             'Location' => 'Office',
             'Reason' => 'Testing TCPDF',
             'ContactInfo' => 'http://www.tcpdf.org',
-            ];
+        ];
 
         // set document signature
         //exec("openssl smime -engine gost -sign -in test.pdf -out test.sig -nodetach -binary -signer client.crt -inkey client.key -outform SMIME");
@@ -258,7 +255,6 @@ class SiteController extends Controller {
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // *** set signature appearance ***
-
         // create content for signature (image and/or text)
         $pdf->Image('images/sign.png', 180, 60, 15, 15, 'PNG');
 
@@ -266,14 +262,13 @@ class SiteController extends Controller {
         $pdf->setSignatureAppearance(180, 60, 15, 15);
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
         // *** set an empty signature appearance ***
         $pdf->addEmptySignatureAppearance(180, 80, 15, 15);
 
         // ---------------------------------------------------------
-
         //Close and output PDF document
         $content = $pdf->Output('example_052.pdf', 's');
         return Yii::$app->response->sendContentAsFile($content, 'test.pdf');
     }
+
 }
