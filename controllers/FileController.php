@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\File;
 use app\models\FileSearch;
+use app\models\Message;
 use app\models\User;
 use app\services\FileService;
 use Yii;
@@ -49,7 +50,7 @@ class FileController extends Controller {
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'delete', 'download', 'upload', 'sign', 'get'],
+                        'actions' => ['index', 'view', 'delete', 'download', 'upload', 'sign', 'get', 'sign-all'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -178,6 +179,18 @@ class FileController extends Controller {
         }
         $this->fileService->sign($model);
         $this->redirect(['view', 'id' => $model->id]);
+    }
+
+    public function actionSignAll($messageId) {
+        $message = Message::findOne($messageId);
+        if ($message && $message->user_id == $this->user->id) {
+            foreach ($message->files as $file) {
+                $this->fileService->sign($file);
+            }
+        } else {
+            throw new ForbiddenHttpException('У Вас нет доступа!');
+        }
+        $this->redirect(['/message/view', 'id' => $message->id]);
     }
 
     /**
