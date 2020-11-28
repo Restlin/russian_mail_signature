@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\bootstrap\Html;
 
 /**
  * This is the model class for table "message".
@@ -22,6 +23,12 @@ use Yii;
  */
 class Message extends \yii\db\ActiveRecord
 {
+    const STATUS_NONE = 0;
+    const STATUS_WORK = 1;
+    const STATUS_DONE = 2;
+    const STATUS_IS_DONE = 3;
+    const STATUS_ERROR = 4;
+
     public $upload_files = null;
     /**
      * {@inheritdoc}
@@ -59,6 +66,7 @@ class Message extends \yii\db\ActiveRecord
             'status' => 'Статус',
             'date_create' => 'Дата создания',
             'upload_files' => 'Файлы',
+            'statusName' => 'Статус',
         ];
     }
 
@@ -95,5 +103,27 @@ class Message extends \yii\db\ActiveRecord
     public function getReply()
     {
         return $this->hasOne(Message::class, ['reply_to_message_id' => 'id']);
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getStatuses(): array {
+        return [
+            static::STATUS_NONE => 'В очереди',
+            static::STATUS_WORK => 'В работе',
+            static::STATUS_DONE => 'Ответ отправлен',
+            static::STATUS_IS_DONE => 'Ожидает согласования и отправки',
+            static::STATUS_ERROR => 'Ошибка',
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatusName(): string {
+        $statuses = static::getStatuses();
+        $status = $statuses[$this->status] ?? 'Неверный статус';
+        return Html::tag('span', $status, ['class' => 'badge']);
     }
 }
