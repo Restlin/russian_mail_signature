@@ -4,16 +4,11 @@ use yii\web\View;
 use kartik\file\FileInput;
 use yii\web\JsExpression;
 use yii\helpers\Url;
-use app\models\File;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
-/* @var $file File */
 ?>
 
-<?php $form = ActiveForm::begin(); ?>
-
-<?= $form->field($file, 'ids')->widget(FileInput::class, [
+<?= FileInput::widget([
     'name' => 'files',
     'options' => [
         'id' => 'files-upload',
@@ -47,4 +42,3 @@ use yii\widgets\ActiveForm;
     ],
 ]) ?>
 
-<?php ActiveForm::end(); ?>
