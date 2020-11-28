@@ -37,7 +37,7 @@ FileInput::widget([
         'layoutTemplates' => [
             'actionDownload' => '<a class="{downloadClass}" title="{downloadTitle}" href="{downloadUrl}" target="_blank" data-pjax="0">{downloadIcon}</a>',
         ],
-        'allowedFileExtensions' => ['doc', 'docx', 'pdf', 'odt'],
+        'allowedFileExtensions' => ['doc', 'docx', 'pdf', 'odt', 'txt'],
     ],
     'pluginEvents' => [
         'filebatchselected' => new JsExpression('function(event, files){$(this).fileinput("upload");}'),

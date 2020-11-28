@@ -7,13 +7,12 @@ use yii\base\NotSupportedException;
 /**
  * Class m201127_172934_create_file
  */
-class m201127_172934_create_file extends Migration
-{
+class m201127_172934_create_file extends Migration {
+
     /**
      * {@inheritdoc}
      */
-    public function safeUp()
-    {
+    public function safeUp() {
         $this->createTable('{{%file}}', [
             'id' => $this->primaryKey()->comment('ID Файла'),
             'name' => $this->string()->notNull()->comment('Наименование файла'),
@@ -36,8 +35,7 @@ class m201127_172934_create_file extends Migration
     /**
      * {@inheritdoc}
      */
-    public function safeDown()
-    {
+    public function safeDown() {
         $this->dropTable('{{%file}}');
     }
 
@@ -46,8 +44,8 @@ class m201127_172934_create_file extends Migration
      * @return ColumnSchemaBuilder
      * @throws NotSupportedException
      */
-    private function timestampWithTimezone(int $precision = null): ColumnSchemaBuilder
-    {
+    private function timestampWithTimezone(int $precision = null): ColumnSchemaBuilder {
         return $this->getDb()->getSchema()->createColumnSchemaBuilder('timestamp with time zone', $precision)->defaultExpression('NULL');
     }
+
 }
