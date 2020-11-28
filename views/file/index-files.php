@@ -16,11 +16,10 @@ use app\models\File;
 /* @var $uploadForm string */
 
 $this->title = 'Почта России';
-$this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="container">
 
+    <h1>Файлы</h1>
     <?php Pjax::begin(['id' => 'grid-view-files']); ?>
     <br>
     <?=
@@ -28,19 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
         'columns' => [
-            'id',
             [
                 'attribute' => 'name',
                 'value' => function (File $model) {
-                    return Html::a($model->name, ['view', 'id' => $model->id]);
-                },
-                'format' => 'html',
-            ],
-            [
-                'attribute' => 'status',
-                'filter' => File::getStatuses(),
-                'value' => function (File $model) {
-                    return $model->getStatusName();
+                    return Html::a($model->name, ['file/view', 'id' => $model->id]);
                 },
                 'format' => 'html',
             ],
@@ -54,4 +44,3 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php Pjax::end(); ?>
 
-</div>

@@ -2,19 +2,33 @@
 
 namespace app\controllers;
 
+use app\models\File;
 use app\models\FileSearch;
+use app\models\User;
+use app\services\FileService;
 use Yii;
 use app\models\Message;
 use app\models\MessageSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * MessageController implements the CRUD actions for Message model.
  */
 class MessageController extends Controller
 {
+    private ?User $user = null;
+    private FileService $fileService;
+
+    public function __construct($id, $module,
+                                FileService $fileService,
+                                $config = []) {
+        $this->fileService = $fileService;
+        $this->user = Yii::$app->user->getIsGuest() ? null : Yii::$app->user->identity->getUser();
+        parent::__construct($id, $module, $config);
+    }
     /**
      * {@inheritdoc}
      */
@@ -53,13 +67,39 @@ class MessageController extends Controller
      */
     public function actionView($id)
     {
+        $user = Yii::$app->user->identity->getUser();
+
         $searchModel = new FileSearch(['messageId' => $id]);
         $dataProvider = $searchModel->search([]);
+
+        $model = $this->findModel($id);
+        $replyModel = new Message(['user_id' => $user->id, 'status' => 0, 'reply_to_message_id' => $model->id]);
+        if ($replyModel->load(Yii::$app->request->post()) && $replyModel->save()) {
+            $replyModel->upload_files = UploadedFile::getInstances($model, 'upload_files');
+            foreach ($replyModel->upload_files as $upload_file) {
+                $file = new File();
+                $file->name = $upload_file->name;
+                $file->mime = mime_content_type($upload_file->tempName);
+                $file->size = filesize($upload_file->tempName);
+                $file->status = File::STATUS_NONE;
+                $file->user_id = $user->id;
+                if ($file->save()) {
+                    $filePath = $this->fileService->getFilePath($file);
+                    $upload_file->saveAs($filePath);
+                }
+                $replyModel->link('files', $file);
+            }
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'files' => $this->renderPartial('/file/index-files', [
                 'searchModel' => $searchModel,
                 'dataProvider' => $dataProvider,
+            ]),
+            'createReply' => $this->renderPartial('create', [
+                'model' => $replyModel,
             ]),
         ]);
     }
