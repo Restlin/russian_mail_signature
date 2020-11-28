@@ -19,6 +19,15 @@ YiiAsset::register($this);
     <h1><?= Html::encode($this->title) ?></h1>
     <p>
         <?=
+        Html::a('Подписать', ['sign', 'id' => $model->id], [
+            'class' => 'btn btn-success',
+            'data' => [
+                'confirm' => "Вы действительно хотите подписать файл {$model->name}?",
+                'method' => 'post',
+            ],
+        ])
+        ?>
+        <?=
         Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -39,11 +48,12 @@ YiiAsset::register($this);
                 'attribute' => 'size',
                 'value' => Yii::$app->formatter->asShortSize($model->size),
             ],
-            [
-                'attribute' => 'status',
-                'value' => $model->getStatusName(),
-                'format' => 'html',
-            ],
+            /* [
+              'attribute' => 'status',
+              'value' => $model->getStatusName(),
+              'format' => 'html',
+              ], */
+            'sign',
         ],
     ])
     ?>
