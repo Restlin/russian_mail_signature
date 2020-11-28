@@ -10,14 +10,11 @@ use yii\grid\GridView;
 $this->title = 'Пользователи';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="user-index">
-
+<div class="container">
     <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
-        <?= Html::a('Добавить', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Добавить', ['create'], ['class' => 'btn btn-primary']) ?>
     </p>
-
     <?=
     GridView::widget([
         'dataProvider' => $dataProvider,
@@ -33,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'isAdmin:boolean',
             [
                 'class' => yii\grid\ActionColumn::class,
-                'template' => '{update} {delete}'
+                'template' => '{view} {update} {delete}'
             ],
         ],
     ]);

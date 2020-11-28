@@ -35,5 +35,3 @@ tests/_support/_generated
 composer.lock
 /runtime/
 /web/assets/
-/keys/
-/files
