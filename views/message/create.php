@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 use kartik\file\FileInput;
 use yii\web\JsExpression;
 use yii\helpers\Url;
+use dosamigos\ckeditor\CKEditor;
 
 
 /* @var $this yii\web\View */
@@ -16,31 +17,27 @@ $this->title = 'Почта России';
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'message')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'message')->widget(CKEditor::class, [
+        'preset' => 'basic',
+    ]) ?>
 
-    <?= $form->field($model, 'files[]')->widget(FileInput::class, [
+    <?= $form->field($model, 'upload_files[]')->widget(FileInput::class, [
         'options' => [
+            'id' => 'message_upload_files',
             'multiple' => true,
         ],
         'pluginOptions' => [
-            'uploadAsync' => false,
-            'encodeUrl' => false,
-            'uploadUrl' => Url::toRoute(['/file/upload']),
             'preferIconicPreview' => true,
             'maxFilePreviewSize' => 0,
             'showUpload' => false,
+            'showRemove' => true,
+            'browseOnZoneClick' => true,
             'disabledPreviewExtensions' => null,
-            'hideThumbnailContent' => true,
-            'initialPreviewAsData' => true,
-            'initialPreviewFileType' => 'image',
-            'overwriteInitial' => false,
-            'layoutTemplates' => [
-                'actionDownload' => '<a class="{downloadClass}" title="{downloadTitle}" href="{downloadUrl}" target="_blank" data-pjax="0">{downloadIcon}</a>',
+            'fileActionSettings' => [
+                'showZoom' => false,
             ],
+            'maxFileSize' => 5120,
             'allowedFileExtensions' => ['doc', 'docx', 'pdf', 'odt'],
-        ],
-        'pluginEvents' => [
-            'filebatchselected' => new JsExpression('function(event, files){$(this).fileinput("upload");}'),
         ],
     ]) ?>
 

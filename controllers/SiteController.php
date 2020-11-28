@@ -8,20 +8,34 @@ use app\models\Message;
 use app\models\MessageSearch;
 use app\models\Row;
 use app\models\RowSearch;
+use app\models\User;
 use app\models\UserSearch;
 use app\security\ForgotForm;
 use app\security\LoginForm;
 use app\security\RegistrationForm;
 use app\security\ResetPwdForm;
+use app\services\FileService;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
+use yii\web\UploadedFile;
 
 class SiteController extends Controller {
+    private ?User $user = null;
+    private FileService $fileService;
 
+    public function __construct($id, $module,
+                                FileService $fileService,
+                                $config = []) {
+        $this->fileService = $fileService;
+        $this->user = Yii::$app->user->getIsGuest() ? null : Yii::$app->user->identity->getUser();
+        parent::__construct($id, $module, $config);
+    }
     /**
      * {@inheritdoc}
      */
@@ -73,11 +87,22 @@ class SiteController extends Controller {
         $searchModel = new MessageSearch(['user_id' => $user->id]);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $model = new Message(['user_id' => $user->id]);
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) { // ЗАМЕНИТЬ НА SAVE
-
-            var_dump(Yii::$app->request->post());
-            die();
+        $model = new Message(['user_id' => $user->id, 'status' => 0]);
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->upload_files = UploadedFile::getInstances($model, 'upload_files');
+            foreach ($model->upload_files as $upload_file) {
+                $file = new File();
+                $file->name = $upload_file->name;
+                $file->mime = mime_content_type($upload_file->tempName);
+                $file->size = filesize($upload_file->tempName);
+                $file->status = File::STATUS_NONE;
+                $file->user_id = $user->id;
+                if ($file->save()) {
+                    $filePath = $this->fileService->getFilePath($file);
+                    $upload_file->saveAs($filePath);
+                }
+                $model->link('messageFiles', $file);
+            }
             return $this->redirect(['index']);
         }
 

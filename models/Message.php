@@ -18,7 +18,7 @@ use Yii;
  */
 class Message extends \yii\db\ActiveRecord
 {
-    public $files = null;
+    public $upload_files = null;
     /**
      * {@inheritdoc}
      */
@@ -53,6 +53,7 @@ class Message extends \yii\db\ActiveRecord
             'user_id' => 'ID пользователя',
             'status' => 'Статус обработки обращения',
             'date_create' => 'Дата создания',
+            'upload_files' => 'Файлы',
         ];
     }
 
