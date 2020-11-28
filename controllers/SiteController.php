@@ -147,18 +147,18 @@ class SiteController extends Controller {
             'model' => $model,
         ]);
     }
-    public function actionPdf() {        
+    public function actionPdf() {
         $pdf = new \app\components\GostPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // set document information
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('Nicola Asuni');
-        $pdf->SetTitle('TCPDF Example 052');
-        $pdf->SetSubject('TCPDF Tutorial');
-        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+        $pdf->SetAuthor('Илья Шумилов');
+        $pdf->SetTitle('Обращение с квалифицированной электронной подписью');
+        $pdf->SetSubject('Квалифицированная подпись');
+        $pdf->SetKeywords('TCPDF, PDF, ГОСТ, КЭП');
 
         // set default header data
-        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE.' 052', PDF_HEADER_STRING);
+        //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, 'Обращение с квалифицированной электронной подписью', PDF_HEADER_STRING);
 
         // set header and footer fonts
         $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
@@ -191,7 +191,7 @@ class SiteController extends Controller {
          - To create self-signed signature: openssl req -x509 -nodes -days 365000 -newkey rsa:1024 -keyout tcpdf.crt -out tcpdf.crt
          - To export crt to p12: openssl pkcs12 -export -in tcpdf.crt -out tcpdf.p12
          - To convert pfx certificate to pem: openssl pkcs12 -in tcpdf.pfx -out tcpdf.crt -nodes
-        */ 
+        */
 
         // set additional information
         $info = [
@@ -202,25 +202,25 @@ class SiteController extends Controller {
             ];
 
         // set document signature
-        //exec("openssl smime -engine gost -sign -in test.pdf -out test.sig -nodetach -binary -signer client.crt -inkey client.key -outform SMIME");        
+        //exec("openssl smime -engine gost -sign -in test.pdf -out test.sig -nodetach -binary -signer client.crt -inkey client.key -outform SMIME");
         $certificate = '../test.sig';
-        $pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, $info);        
+        $pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, $info);
 
         // set font
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('dejavusans', '', 12, '', true);
 
         // add a page
         $pdf->AddPage();
 
         // print a line of text
-        $text = 'This is a <b color="#FF0000">digitally signed document</b> using the default (example) <b>tcpdf.crt</b> certificate.<br />To validate this signature you have to load the <b color="#006600">tcpdf.fdf</b> on the Arobat Reader to add the certificate to <i>List of Trusted Identities</i>.<br /><br />For more information check the source code of this example and the source code documentation for the <i>setSignature()</i> method.<br /><br /><a href="http://www.tcpdf.org">www.tcpdf.org</a>';
+        $text = 'Этот <b color="#FF0000">документ</b> подписан с помощью КЭП ГОСТ Р 34.10-2012.<br /> Для валидации подписи откройте <b color="#006600">файл</b> в Arobat Reader.';
         $pdf->writeHTML($text, true, 0, true, 0);
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // *** set signature appearance ***
 
         // create content for signature (image and/or text)
-        $pdf->Image('images/tcpdf_signature.png', 180, 60, 15, 15, 'PNG');
+        $pdf->Image('images/sign.png', 180, 60, 15, 15, 'PNG');
 
         // define active area for signature appearance
         $pdf->setSignatureAppearance(180, 60, 15, 15);

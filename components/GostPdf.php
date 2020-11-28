@@ -9,7 +9,7 @@ use TCPDF_STATIC;
  *
  * @author restlin
  */
-class GostPdf extends \TCPDF {    
+class GostPdf extends \TCPDF {
 
     /**
      * Send the document to a given destination: string, local file or browser.
@@ -22,12 +22,12 @@ class GostPdf extends \TCPDF {
      * @since 1.0
      * @see Close()
      */
-    public function Output($name = 'doc.pdf', $dest = 'I') {        
+    public function Output($name = 'doc.pdf', $dest = 'I') {
         //Output PDF to some destination
         //Finish document if necessary
         if ($this->state < 3) {
             $this->Close();
-        }        
+        }
         //Normalize parameters
         if (is_bool($dest)) {
             $dest = $dest ? 'D' : 'F';
@@ -36,7 +36,7 @@ class GostPdf extends \TCPDF {
         if ($dest[0] != 'F') {
             $name = preg_replace('/[\s]+/', '_', $name);
             $name = preg_replace('/[^a-zA-Z0-9_\.-]/', '', $name);
-        }        
+        }
         if ($this->sign) {
             // *** apply digital signature to the document ***
             // get the document content
@@ -66,7 +66,7 @@ class GostPdf extends \TCPDF {
             fwrite($f, $pdfdoc, $pdfdoc_length);
             fclose($f);
             // get digital signature via openssl library
-            $tempsign = TCPDF_STATIC::getObjFilename('sig', $this->file_id);            
+            $tempsign = TCPDF_STATIC::getObjFilename('sig', $this->file_id);
             /*if (empty($this->signature_data['extracerts'])) {
                 openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
             } else {
@@ -79,7 +79,7 @@ class GostPdf extends \TCPDF {
             $signature = substr($signature, $pdfdoc_length);
             $signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
             $tmparr = explode("\n\n", $signature);
-            $signature = $tmparr[1];
+            $signature = $tmparr[0]; //$tmparr[1];
             // decode signature
             $signature = base64_decode(trim($signature));
             // add TSA timestamp to signature
