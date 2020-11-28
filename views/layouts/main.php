@@ -40,14 +40,11 @@ AppAsset::register($this);
             ]);
             NavBar::end();
             ?>
-
-
             <?= $content ?>
-
         </div>
         <footer class="footer">
             <div class="container">
-                <p class="pull-left"><?= date('Y') ?> &copy; АО Почта России</p>
+                <p class="pull-left"><?= date('Y') ?> &copy; АО Почта России (прототип IT animals, финал Цифрового прорыва 2020)</p>
             </div>
         </footer>
         <?php $this->endBody() ?>
