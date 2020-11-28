@@ -44,7 +44,6 @@ AppAsset::register($this);
                             ['label' => 'Настройки', 'url' => ['/user/view', 'id' => $user->id]],
                             ['label' => 'Выход', 'url' => ['/site/logout']],
                         ],
-                        'linkOptions' => ['calss' => 'top-in-menu']
                     ],
                 ];
             }

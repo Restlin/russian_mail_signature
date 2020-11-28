@@ -26,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ])
             ?>
         <?php } ?>
+        <?= Html::a('Создать ЭП', ['create-e-sign', 'id' => $model->id], ['class' => 'btn btn-success', 'data-method' => 'post']) ?>
     </p>
     <?=
     DetailView::widget([

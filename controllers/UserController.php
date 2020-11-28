@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\User;
 use app\models\UserSearch;
+use app\services\UserESignService;
 use app\security\ChangePwdForm;
 use app\security\EmailConfirmForm;
 use Yii;
@@ -20,8 +21,15 @@ use yii\widgets\ActiveForm;
 class UserController extends Controller {
 
     private ?User $user = null;
+    private UserESignService $userESignService;
 
-    public function __construct($id, $module, $config = []) {
+    public function __construct(
+            $id,
+            $module,
+            UserESignService $userESignService,
+            $config = []
+    ) {
+        $this->userESignService = $userESignService;
         $this->user = Yii::$app->user->getIsGuest() ? null : Yii::$app->user->identity->getUser();
         parent::__construct($id, $module, $config);
     }
@@ -35,13 +43,14 @@ class UserController extends Controller {
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'create-e-sign' => ['POST'],
                 ],
             ],
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
                     [
-                        'actions' => ['view', 'change-pwd', 'change-pwd-validate', 'update'],
+                        'actions' => ['view', 'change-pwd', 'change-pwd-validate', 'update', 'create-e-sign'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -79,7 +88,7 @@ class UserController extends Controller {
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id) {
+    public function actionView(int $id) {
         $model = $this->findModel($id);
         if ($model->id != $this->user->id && !$model->isAdmin) {
             throw new ForbiddenHttpException('У Вас нет доступа к данному профилю!');
@@ -111,8 +120,11 @@ class UserController extends Controller {
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id) {
+    public function actionUpdate(int $id) {
         $model = $this->findModel($id);
+        if ($model->id != $this->user->id && !$model->isAdmin) {
+            throw new ForbiddenHttpException('У Вас нет доступа к данному профилю!');
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -128,7 +140,7 @@ class UserController extends Controller {
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id) {
+    public function actionDelete(int $id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -141,7 +153,7 @@ class UserController extends Controller {
      * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id) {
+    protected function findModel(int $id) {
         if (($model = User::findOne($id)) !== null) {
             return $model;
         }
@@ -177,7 +189,7 @@ class UserController extends Controller {
             $model = new ChangePwdForm();
             if ($model->load(Yii::$app->request->post())) {
                 if ($model->setNewPwd()) {
-                    return $this->redirect(['/user/profile-form', 'id' => $this->user->id, 'tab' => 'security']);
+                    return $this->redirect(['/user/view', 'id' => $this->user->id]);
                 }
             }
         }
@@ -192,6 +204,15 @@ class UserController extends Controller {
                 return ActiveForm::validate($model);
             }
         }
+    }
+
+    public function actionCreateESign(int $id) {
+        $model = $this->findModel($id);
+        if ($model->id != $this->user->id && !$model->isAdmin) {
+            throw new ForbiddenHttpException('У Вас нет доступа к данному профилю!');
+        }
+        $this->userESignService->create($model);
+        return $this->redirect(['/user/view', 'id' => $this->user->id]);
     }
 
 }
