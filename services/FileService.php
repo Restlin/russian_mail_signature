@@ -24,6 +24,17 @@ final class FileService extends BaseObject {
     private string $path = '';
 
     /**
+     * Формат подписи
+     * @var string
+     */
+    private string $form = 'SMIME';
+
+    /**
+     * Путь до пользовательского ключа
+     */
+    private string $pathCA = '@app/keys/CA';
+
+    /**
      * Путь до пользовательского ключа
      */
     private string $clientKeysPath = '@app/keys';
@@ -99,11 +110,26 @@ final class FileService extends BaseObject {
 
     public function sign(File $file): bool {
         $fp = $this->getFilePath($file);
-        $fDir = $this->getFileDir($file);
         $clientKeysPath = Yii::getAlias($this->clientKeysPath);
-        exec("openssl smime -engine gost -sign -in $fp -out $fDir/{$file->id}.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform SMIME");
-        $file->sign = file_get_contents($fDir . $file->id . '.sig');
+        exec("openssl smime -engine gost -sign -in $fp -out $fp.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform {$this->form}");
+        $file->sign = file_get_contents($fp . '.sig');
         return $file->save();
+    }
+
+    public function checkSign(File $file): string {
+        $output = 'Файл не подписан';
+        if ($file->sign) {
+            $fp = $this->getFilePath($file);
+            $clientKeysPath = Yii::getAlias($this->clientKeysPath);
+            $pathCA = Yii::getAlias($this->pathCA);
+            $output = exec("openssl cms -engine gost -verify -in $fp.sig -inform {$this->form} -CAfile $pathCA/ca.crt -out $fp -certsout $clientKeysPath/client.crt 2>&1");
+            if ($output == 'Verification successful') {
+                $output = 'Подпись верна';
+            } else {
+                $output = 'Подпись не прошла проверку';
+            }
+        }
+        return $output;
     }
 
 }
