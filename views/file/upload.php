@@ -6,10 +6,11 @@ use yii\web\JsExpression;
 use yii\helpers\Url;
 
 /* @var $this View */
-
 ?>
 
-<?= FileInput::widget([
+<?=
+
+FileInput::widget([
     'name' => 'files',
     'options' => [
         'id' => 'files-upload',
@@ -18,7 +19,7 @@ use yii\helpers\Url;
     'pluginOptions' => [
         'uploadAsync' => false,
         'encodeUrl' => false,
-        'uploadUrl' => Url::to(['/file/upload']),
+        'uploadUrl' => Url::toRoute(['/file/upload']),
         'preferIconicPreview' => true,
         'maxFilePreviewSize' => 0,
         'showUpload' => false,
@@ -36,10 +37,10 @@ use yii\helpers\Url;
         'layoutTemplates' => [
             'actionDownload' => '<a class="{downloadClass}" title="{downloadTitle}" href="{downloadUrl}" target="_blank" data-pjax="0">{downloadIcon}</a>',
         ],
-        //'maxFileSize' => 102400,
-        'allowedFileExtensions'=>['csv', 'xlsx'],
+        'allowedFileExtensions' => ['doc', 'docx', 'pdf', 'odt', 'txt'],
     ],
     'pluginEvents' => [
         'filebatchselected' => new JsExpression('function(event, files){$(this).fileinput("upload");}'),
     ],
-]) ?>
+])
+?>
