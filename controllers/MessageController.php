@@ -17,26 +17,26 @@ use yii\web\UploadedFile;
 /**
  * MessageController implements the CRUD actions for Message model.
  */
-class MessageController extends Controller
-{
+class MessageController extends Controller {
+
     private ?User $user = null;
     private FileService $fileService;
 
     public function __construct($id, $module,
-                                FileService $fileService,
-                                $config = []) {
+            FileService $fileService,
+            $config = []) {
         $this->fileService = $fileService;
         $this->user = Yii::$app->user->getIsGuest() ? null : Yii::$app->user->identity->getUser();
         parent::__construct($id, $module, $config);
     }
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -48,19 +48,17 @@ class MessageController extends Controller
      * Lists all Message models.
      * @return mixed
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new MessageSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+                    'searchModel' => $searchModel,
+                    'dataProvider' => $dataProvider,
         ]);
     }
 
-    public function actionSend($id)
-    {
+    public function actionSend($id) {
         $model = $this->findModel($id);
         $model->status = Message::STATUS_DONE;
         if ($model->save()) {
@@ -77,8 +75,7 @@ class MessageController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         $user = Yii::$app->user->identity->getUser();
 
         $searchModel = new FileSearch(['messageId' => $id]);
@@ -109,15 +106,15 @@ class MessageController extends Controller
         }
 
         return $this->render('view', [
-            'user' => $user,
-            'model' => $model,
-            'files' => $this->renderPartial('/file/index-files', [
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-            ]),
-            'createReply' => $this->renderPartial('create', [
-                'model' => $replyModel,
-            ]),
+                    'user' => $user,
+                    'model' => $model,
+                    'files' => $this->renderPartial('/file/index-files', [
+                        'searchModel' => $searchModel,
+                        'dataProvider' => $dataProvider,
+                    ]),
+                    'createReply' => $this->renderPartial('create', [
+                        'model' => $replyModel,
+                    ]),
         ]);
     }
 
@@ -126,8 +123,7 @@ class MessageController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Message();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -135,7 +131,7 @@ class MessageController extends Controller
         }
 
         return $this->render('create', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -146,8 +142,7 @@ class MessageController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -155,7 +150,7 @@ class MessageController extends Controller
         }
 
         return $this->render('update', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -166,8 +161,7 @@ class MessageController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['/site/index']);
@@ -180,12 +174,12 @@ class MessageController extends Controller
      * @return Message the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Message::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }
