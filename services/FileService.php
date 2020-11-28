@@ -134,4 +134,22 @@ final class FileService extends BaseObject {
         return $output;
     }
 
+    public function createFile(\yii\web\UploadedFile $uploadedFile, User $user) {
+        $file = new File();
+        $file->name = $uploadedFile->name;
+        $file->mime = mime_content_type($uploadedFile->tempName);
+        $file->size = filesize($uploadedFile->tempName);
+        $file->status = File::STATUS_NONE;
+        $file->user_id = $user->id;
+        if ($file->save()) {
+            $filePath = $this->getFilePath($file);
+            $uploadedFile->saveAs($filePath);
+
+            $dir = dirname($filePath);
+            $homeDir = Yii::getAlias('@app/home');
+            exec("export HOME=$homeDir && /usr/bin/libreoffice --headless --convert-to pdf $filePath --outdir $dir");
+        }
+        return $file;
+    }
+
 }
