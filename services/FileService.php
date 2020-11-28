@@ -105,8 +105,7 @@ final class FileService extends BaseObject {
     public function sign(File $file): bool {
         $fp = $this->getFilePath($file);
         $clientKeysPath = $this->userESignService->getESignPath($file->user);
-        $pathCA = $this->userESignService->getCAPath();
-        exec("openssl smime -engine gost -sign -in $fp -out $fp.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform {$this->form} 2>&1");
+        exec("openssl smime -engine gost -sign -in $fp -out $fp.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform {$this->form} 2>&1", $output);
         if (file_exists($fp . '.sig')) {
             $file->sign = file_get_contents("$fp.sig");
         }
@@ -119,9 +118,15 @@ final class FileService extends BaseObject {
             $fp = $this->getFilePath($file);
             $clientKeysPath = $this->userESignService->getESignPath($file->user);
             $pathCA = $this->userESignService->getCAPath();
+            /* if (file_exists("$pathCA/crl.pem")) {
+              $output = exec("openssl cms -crl_check -engine gost -verify -in $fp.sig -inform {$this->form} -certfile -CAfile $pathCA/ca.crt -out $fp -certsout $clientKeysPath/client.crt 2>&1");
+              } else { */
             $output = exec("openssl cms -engine gost -verify -in $fp.sig -inform {$this->form} -CAfile $pathCA/ca.crt -out $fp -certsout $clientKeysPath/client.crt 2>&1");
+            //}
             if ($output == 'Verification successful') {
                 $output = 'Подпись верна';
+            } elseif (strpos($output, 'Verify error:certificate revoked') > 0) {
+                $output = 'Подпись отозвана';
             } else {
                 $output = 'Подпись не прошла проверку';
             }

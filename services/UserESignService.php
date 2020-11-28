@@ -79,4 +79,22 @@ class UserESignService extends BaseObject {
         exec("openssl ca -engine gost -keyfile $caPath/ca.key -cert $caPath/ca.crt -in $eSignPath/client.csr -out $eSignPath/client.crt -batch -config $caPath/openssl.cnf 2>&1", $output);
     }
 
+    public function revoke(User $user) {
+        $eSignPath = $this->getESignPath($user);
+        if (file_exists("$eSignPath/client.crt")) {
+            $caPath = $this->getCAPath();
+            exec("openssl ca -config $caPath/openssl.cnf -keyfile $caPath/ca.key -cert $caPath/ca.crt -revoke $eSignPath/client.crt 2>&1", $output);
+            exec("openssl ca -gencrl -config $caPath/openssl.cnf -keyfile $caPath/ca.key -cert $caPath/ca.crt -out $caPath/crl.pem 2>&1", $output);
+        }
+    }
+
+    public function get(User $user): string {
+        $eSignPath = $this->getESignPath($user);
+        if (file_exists($eSignPath)) {
+            exec("openssl x509 -in $eSignPath/client.crt -noout -text", $output);
+            return implode('<br>', $output);
+        }
+        return '';
+    }
+
 }
