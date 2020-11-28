@@ -36,3 +36,4 @@ composer.lock
 /runtime/
 /web/assets/
 /keys/
+/files
