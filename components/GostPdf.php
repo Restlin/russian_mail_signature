@@ -9,8 +9,11 @@ use TCPDF_STATIC;
  *
  * @author restlin
  */
-class GostPdf extends \TCPDF {
-
+class GostPdf extends \TCPDF {   
+    public function Header() {
+        $this->SetFont('dejavusans', '', 12, '', true);
+        $this->writeHTML("$this->title от $this->author<hr>");
+    }
     /**
      * Send the document to a given destination: string, local file or browser.
      * In the last case, the plug-in may be used (if present) or a download ("Save as" dialog box) may be forced.<br />
@@ -67,19 +70,23 @@ class GostPdf extends \TCPDF {
             fclose($f);
             // get digital signature via openssl library
             $tempsign = TCPDF_STATIC::getObjFilename('sig', $this->file_id);
+            
+            $fileService = \Yii::$container->get(\app\services\FileService::class); //@todo нормально передавать через параметры
+            /*@var $fileService \app\services\FileService*/
+            $user = \Yii::$app->user->identity->getUser();  //@todo нормально передавать через параметры
+            $signature = $fileService->signPdf($tempdoc, $user);  
             /*if (empty($this->signature_data['extracerts'])) {
                 openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
             } else {
                 openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED, $this->signature_data['extracerts']);
             }*/
             // read signature
-            //$signature = file_get_contents($tempsign);
-            $signature = file_get_contents($this->signature_data['signcert']);
+            //$signature = file_get_contents($tempsign);            
             // extract signature
             $signature = substr($signature, $pdfdoc_length);
             $signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));
             $tmparr = explode("\n\n", $signature);
-            $signature = $tmparr[0]; //$tmparr[1];
+            $signature = $tmparr[1];
             // decode signature
             $signature = base64_decode(trim($signature));
             // add TSA timestamp to signature

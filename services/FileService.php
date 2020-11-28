@@ -4,6 +4,7 @@ namespace app\services;
 
 use Yii;
 use app\models\File;
+use app\models\User;
 use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
 use yii\helpers\FileHelper;
@@ -104,6 +105,12 @@ final class FileService extends BaseObject {
         if (file_exists($fp)) {
             unlink($fp);
         }
+    }
+    
+    public function signPdf(string $fp, User $user): ?string {
+        $clientKeysPath = $this->userESignService->getESignPath($user);
+        exec("openssl smime -engine gost -sign -in $fp -out $fp.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform {$this->form} 2>&1", $output);
+        return file_exists($fp . '.sig') ? file_get_contents("$fp.sig") : null;
     }
 
     public function sign(File $file): bool {

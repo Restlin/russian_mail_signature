@@ -42,11 +42,17 @@ $this->title = 'Почта России';
             [
                 'attribute' => 'sign',
                 'format' => 'raw',
-                'value' => fn(File $model) => Html::a('скачать', ['/file/get', 'id' => $model->id, 'sign' => true]),
+                'value' => fn(File $model) => $model->sign ? Html::a('скачать', ['/file/get', 'id' => $model->id, 'sign' => true], ['data-pjax' => 0]) : 'нет',
             ],
             [
+                'label' => 'Файл',
                 'format' => 'raw',
-                'value' => fn(File $model) => Html::a('скачать файл', ['file/get', 'id' => $model->id]),
+                'value' => fn(File $model) => Html::a('скачать', ['file/get', 'id' => $model->id], ['data-pjax' => 0]),
+            ],
+            [
+                'label' => 'PDF',
+                'format' => 'raw',
+                'value' => fn(File $model) => file_exists($fileService->getFilePath($model).'.pdf') ? Html::a('скачать', ['file/get', 'id' => $model->id, 'pdf' => true], ['data-pjax' => 0]) : 'нет',
             ],
         ],
     ]);

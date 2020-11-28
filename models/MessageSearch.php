@@ -51,7 +51,7 @@ class MessageSearch extends Message
             'attributes' => [
                 'id', 'user_id', 'status'
             ],
-            'defaultOrder' => ['status' => SORT_DESC],
+            'defaultOrder' => ['status' => SORT_DESC, 'id' => SORT_DESC],
         ]);
 
         $dataProvider = new ActiveDataProvider([

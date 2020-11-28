@@ -62,8 +62,11 @@ class MessageController extends Controller {
         $model = $this->findModel($id);
         $model->status = Message::STATUS_DONE;
         if ($model->save()) {
+            foreach ($model->files as $file) {
+                $this->fileService->sign($file);
+            }
             $base = $this->findModel($model->reply_to_message_id);
-            $base->status = Message::STATUS_DONE;
+            $base->status = Message::STATUS_DONE;            
             $base->save();
         }
         return $this->redirect(['view', 'id' => $model->id]);
@@ -181,6 +184,75 @@ class MessageController extends Controller {
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    
+    public function actionPdf($id) {
+        $model = $this->findModel($id);
+        
+        $pdf = new \app\components\GostPdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        // set document information
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor($model->user->name.' '.$model->user->surname);
+        $pdf->SetTitle("Обращение №{$model->id}");
+        $pdf->SetSubject("Обращение №{$model->id} подписано электронной подписью");
+        $pdf->SetKeywords('TCPDF, PDF, ГОСТ, Почта Росссии, Хакатон, IT-animals');        
+
+        // set margins
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // set auto page breaks
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // set image scale factor
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+        // set some language-dependent strings (optional)
+        if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+            require_once(dirname(__FILE__) . '/lang/eng.php');
+            $pdf->setLanguageArray($l);
+        }
+
+        // ---------------------------------------------------------
+        
+        $certificate = 'user';
+        $pdf->setSignature($certificate, $certificate, 'tcpdfdemo', '', 2, []);
+        
+        $pdf->SetFont('dejavusans', '', 12, '', true);
+
+        // add a page
+        $pdf->AddPage();
+
+        $pdf->writeHTML($model->message, true, 0, true, 0);
+        
+        if($model->files) {
+            $pdf->writeHTML('<div style="border-top: 1px solid #888; margin:10px;">Прикрепленные файлы:</div>', true, 0, true, 0);
+            foreach($model->files as $file) {
+                $filePath = $this->fileService->getFilePath($file);
+                if(file_exists($filePath.'.pdf')) {
+                    $filePath .= '.pdf';
+                }
+                $pdf->Annotation($pdf->getX()-5, $pdf->GetY(), 5, 5, $file->name, ['Subtype'=>'FileAttachment', 'Name' => $file->name, 'FS' => $filePath]);
+                $pdf->writeHTML("<div>{$file->name}</div>", true, 0, true, 0);
+            }
+        }        
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // *** set signature appearance ***        
+        $signY = $pdf->getY();
+        $pdf->Image('images/sign.png', 180, $signY, 15, 15, 'PNG'); // create content for signature (image and/or text)
+        $pdf->setSignatureAppearance(180, $signY, 15, 15); // define active area for signature appearance
+
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        // *** set an empty signature appearance ***
+        //$pdf->addEmptySignatureAppearance(180, 80, 15, 15);
+
+        // ---------------------------------------------------------
+        //Close and output PDF document
+        $content = $pdf->Output("обращение_{$model->id}.pdf", 's');
+        return Yii::$app->response->sendContentAsFile($content, "обращение_{$model->id}.pdf");
     }
 
 }

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\bootstrap\Modal;
+use app\models\Message;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Message */
@@ -13,17 +14,21 @@ $this->title = 'Почта России';
 
 ?>
 <div class="container">
-
-    <?php if ($user->isAdmin): ?>
+    
     <p>
+        <?= Html::a('PDF', ['pdf', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
+                'confirm' => 'Вы уверены, что хотите удалить обращение?',
                 'method' => 'post',
             ],
         ]) ?>
+    </p>
+    <?php if ($model->question): ?>
+    <p>
+        <?= Html::a('Посмотреть вопрос', ['view', 'id' => $model->question->id], ['class' => 'btn btn-primary']) ?>
     </p>
     <?php endif; ?>
 
@@ -47,10 +52,19 @@ $this->title = 'Почта России';
         <?= Html::a('Посмотреть ответ', ['view', 'id' => $model->reply->id], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php elseif ($user->isAdmin && $model->reply_to_message_id): ?>
+    <?php elseif ($user->isAdmin && $model->status == Message::STATUS_IS_DONE && $model->reply_to_message_id): ?>
 
     <p>
-        <?= Html::a('Согласовать и отправить', ['send', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a(
+            'Согласовать и отправить', 
+            ['send', 'id' => $model->id], 
+            [
+                'class' => 'btn btn-warning',
+                'data' => [
+                    'confirm' => 'Вы действительно хотите подписать данное обращение и все приложенные файлы?',
+                ],
+            ]
+        ) ?>
     </p>
 
     <?php endif; ?>

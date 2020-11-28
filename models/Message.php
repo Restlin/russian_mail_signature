@@ -20,6 +20,7 @@ use yii\bootstrap\Html;
  * @property File[] $files
  * @property Message[] $replies
  * @property Message $reply
+ * @property Message $question
  */
 class Message extends \yii\db\ActiveRecord
 {
@@ -49,8 +50,8 @@ class Message extends \yii\db\ActiveRecord
             [['user_id', 'status', 'reply_to_message_id'], 'default', 'value' => null],
             [['user_id', 'status', 'reply_to_message_id'], 'integer'],
             [['date_create', 'files'], 'safe'],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
-            [['reply_to_message_id'], 'exist', 'skipOnError' => true, 'targetClass' => Message::className(), 'targetAttribute' => ['reply_to_message_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['reply_to_message_id'], 'exist', 'skipOnError' => true, 'targetClass' => Message::class, 'targetAttribute' => ['reply_to_message_id' => 'id']],
         ];
     }
 
@@ -105,6 +106,10 @@ class Message extends \yii\db\ActiveRecord
         return $this->hasOne(Message::class, ['reply_to_message_id' => 'id']);
     }
 
+    public function getQuestion()
+    {
+        return $this->hasOne(Message::class, ['id' => 'reply_to_message_id']);
+    }
     /**
      * @return string[]
      */
