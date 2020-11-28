@@ -195,7 +195,7 @@ class FileController extends Controller {
         throw new NotFoundHttpException('Запрашиваемая страница не найдена.');
     }
 
-    public function actionGet(int $id, bool $sign = false) {
+    public function actionGet(int $id, $sign = false) {
         $model = $this->findModel($id);
         if ($model->user_id != $this->user->id) {
             throw new ForbiddenHttpException('У Вас нет доступа к указанному файлу!');
@@ -204,13 +204,12 @@ class FileController extends Controller {
         if ($sign) {
             $filePath = $filePath . '.sig';
             $mime = 'application/x-pkcs7-mime';
+            $name = $model->name.'.sig';
         } else {
             $mime = $model->mime;
+            $name = $model->name;
         }
-        Yii::$app->response->xSendFile($filePath, $model->name, [
-            'mimeType' => $mime,
-            'inline' => false
-        ]);
+        Yii::$app->response->xSendFile($filePath, $name, ['mimeType' => $mime, 'inline' => false]);
     }
 
 }
