@@ -88,8 +88,6 @@ class SiteController extends Controller {
                 'dataProvider' => $dataProvider,
                 'createForm' => $this->renderPartial('/message/create', [
                     'model' => $model,
-                    'file' => new File(),
-                    //'uploadForm' => $this->renderPartial('/file/upload', ['file' => new File()]),
                 ]),
             ]),
         ]);

@@ -9,7 +9,6 @@ use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Message */
-/* @var $file \app\models\File */
 
 $this->title = 'Почта России';
 ?>
