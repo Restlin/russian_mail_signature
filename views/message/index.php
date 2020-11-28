@@ -47,8 +47,12 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'status',
                 'value' => function ($model) {
+                    if ($model->reply) {
+                        return Html::a('Обработано', ['/message/view', 'id' => $model->reply->id]);
+                    }
                     return 'В работе';
                 },
+                'format' => 'html',
             ],
         ],
     ]); ?>
