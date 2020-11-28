@@ -5,7 +5,6 @@ use app\models\File;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\web\YiiAsset;
-use app\models\Row;
 
 /* @var $this View */
 /* @var $model File */
@@ -16,21 +15,21 @@ $this->params['breadcrumbs'][] = $this->title;
 
 YiiAsset::register($this);
 ?>
-<div class="file-view">
-
+<div class="container">
     <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
-        <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
+        <?=
+        Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Вы действительно хотите удалить данные?',
                 'method' => 'post',
             ],
-        ]) ?>
+        ])
+        ?>
     </p>
-
-    <?= DetailView::widget([
+    <?=
+    DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
@@ -45,19 +44,7 @@ YiiAsset::register($this);
                 'value' => $model->getStatusName(),
                 'format' => 'html',
             ],
-            [
-                'label' => 'Количество строк',
-                'value' => $model->getCountAllRows(),
-            ],
-            [
-                'label' => 'Количество успешно обработанных строк',
-                'value' => $model->getCountRowsByStatuses([Row::STATUS_DONE]),
-            ],
-            [
-                'label' => 'Количество ошибок',
-                'value' => $model->getCountRowsByStatuses([Row::STATUS_ERROR]),
-            ],
         ],
-    ]) ?>
-
+    ])
+    ?>
 </div>
