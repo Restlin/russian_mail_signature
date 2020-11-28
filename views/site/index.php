@@ -1,4 +1,5 @@
 <?php
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $user \app\models\User */
@@ -18,7 +19,8 @@ $this->title = 'Почта России';
             <li><a href="#">Отправить посылку</a></li>
             <li><a href="#">Вызвать курьера</a></li>
             <li><a href="#">Платежи и переводы</a></li>
-            <li><a href="#">Отделения</a></li>
+            <!--<li><a href="#">Отделения</a></li>!-->
+            <li><?= Html::a('Обращение с подписью', ['site/pdf'])?></li>
         </ul>
     </div>
 </nav>
