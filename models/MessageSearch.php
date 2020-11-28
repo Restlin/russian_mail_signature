@@ -18,7 +18,7 @@ class MessageSearch extends Message
     {
         return [
             [['id', 'user_id', 'status'], 'integer'],
-            [['message', 'date_create'], 'safe'],
+            [['message', 'date_create', 'reply_to_message_id'], 'safe'],
         ];
     }
 
@@ -63,6 +63,9 @@ class MessageSearch extends Message
             'status' => $this->status,
             'date_create' => $this->date_create,
         ]);
+
+
+        $query->andWhere(['reply_to_message_id' => $this->reply_to_message_id]);
 
         $query->andFilterWhere(['ilike', 'message', $this->message]);
 
