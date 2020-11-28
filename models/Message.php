@@ -56,7 +56,7 @@ class Message extends \yii\db\ActiveRecord
             'id' => 'ИД',
             'message' => 'Сообщение',
             'user_id' => 'ID пользователя',
-            'status' => 'Статус обработки обращения',
+            'status' => 'Статус',
             'date_create' => 'Дата создания',
             'upload_files' => 'Файлы',
         ];

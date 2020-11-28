@@ -34,10 +34,6 @@ $this->title = 'Почта России';
                 },
                 'format' => 'html',
             ],
-            [
-                'class' => yii\grid\ActionColumn::class,
-                'template' => '{delete}'
-            ],
         ],
     ]);
     ?>

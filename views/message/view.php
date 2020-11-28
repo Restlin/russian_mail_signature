@@ -27,7 +27,7 @@ $this->title = 'Почта России';
     </p>
     <?php endif; ?>
 
-    <?php if (!$model->reply_to_message_id && !$model->reply): ?>
+    <?php if ($user->isAdmin && !$model->reply_to_message_id && !$model->reply): ?>
     <p>
     <?php
     Modal::begin([
@@ -44,7 +44,7 @@ $this->title = 'Почта России';
     </p>
     <?php elseif (!$model->reply_to_message_id && $model->reply): ?>
     <p>
-        <?= Html::a('Подписать ответ и отправить', ['view', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+        <?= Html::a('Посмотреть ответ', ['view', 'id' => $model->reply->id], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php endif; ?>
