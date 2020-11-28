@@ -41,7 +41,7 @@ AppAsset::register($this);
                     [
                         'label' => $user->name . ' ' . $user->patronymic . ' ' . $user->surname,
                         'items' => [
-                            ['label' => 'Настройки', 'url' => ['/user/update', 'id' => $user->id]],
+                            ['label' => 'Настройки', 'url' => ['/user/view', 'id' => $user->id]],
                             ['label' => 'Выход', 'url' => ['/site/logout']],
                         ],
                         'linkOptions' => ['calss' => 'top-in-menu']
