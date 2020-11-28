@@ -111,6 +111,7 @@ class MessageController extends Controller {
                     'files' => $this->renderPartial('/file/index-files', [
                         'searchModel' => $searchModel,
                         'dataProvider' => $dataProvider,
+                        'fileService' => $this->fileService,
                     ]),
                     'createReply' => $this->renderPartial('create', [
                         'model' => $replyModel,

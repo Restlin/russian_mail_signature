@@ -2,7 +2,6 @@ html,
 body {
     height: 100%;
     font-family: "Roboto", Arial, sans-serif;
-    line-height: 24px;
 }
 
 #loginform-username, #loginform-password {
@@ -61,7 +60,7 @@ body {
     padding: 0 0 60px;
 }
 
-li > a {
+.navbar li.dropdown > a {
     height: 90px;
 }
 .navbar-nav > li > a {
