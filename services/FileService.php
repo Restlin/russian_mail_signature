@@ -8,8 +8,11 @@ use yii\base\BaseObject;
 use yii\base\InvalidArgumentException;
 use yii\helpers\FileHelper;
 use yii\base\Exception;
+use app\services\UserESignService;
 
 final class FileService extends BaseObject {
+
+    private UserESignService $userESignService;
 
     /**
      * Пути файлов для удаления
@@ -33,11 +36,12 @@ final class FileService extends BaseObject {
      * FileService constructor.
      * @param array $params
      */
-    public function __construct(array $params = []) {
+    public function __construct(UserESignService $userESignService, array $params = []) {
         if (!key_exists('path', $params)) {
             throw new InvalidArgumentException();
         }
         $this->path = $params['path'];
+        $this->userESignService = $userESignService;
     }
 
     /**
@@ -100,9 +104,12 @@ final class FileService extends BaseObject {
 
     public function sign(File $file): bool {
         $fp = $this->getFilePath($file);
-        $clientKeysPath = Yii::getAlias($this->clientKeysPath);
-        exec("openssl smime -engine gost -sign -in $fp -out $fp.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform {$this->form} -config $caPath/openssl.cnf");
-        $file->sign = file_get_contents($fp . '.sig');
+        $clientKeysPath = $this->userESignService->getESignPath($file->user);
+        $pathCA = $this->userESignService->getCAPath();
+        exec("openssl smime -engine gost -sign -in $fp -out $fp.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform {$this->form} 2>&1");
+        if (file_exists($fp . '.sig')) {
+            $file->sign = file_get_contents("$fp.sig");
+        }
         return $file->save();
     }
 
@@ -110,9 +117,9 @@ final class FileService extends BaseObject {
         $output = 'Файл не подписан';
         if ($file->sign) {
             $fp = $this->getFilePath($file);
-            $clientKeysPath = Yii::getAlias($this->clientKeysPath);
-            $pathCA = Yii::getAlias($this->pathCA);
-            $output = exec("openssl cms -engine gost -verify -in $fp.sig -inform {$this->form} -CAfile $pathCA/ca.crt -out $fp -certsout $clientKeysPath/client.crt -config $caPath/openssl.cnf 2>&1");
+            $clientKeysPath = $this->userESignService->getESignPath($file->user);
+            $pathCA = $this->userESignService->getCAPath();
+            $output = exec("openssl cms -engine gost -verify -in $fp.sig -inform {$this->form} -CAfile $pathCA/ca.crt -out $fp -certsout $clientKeysPath/client.crt 2>&1");
             if ($output == 'Verification successful') {
                 $output = 'Подпись верна';
             } else {
