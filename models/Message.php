@@ -18,6 +18,7 @@ use Yii;
  * @property MessageFile[] $messageFiles
  * @property File[] $files
  * @property Message[] $replies
+ * @property Message $reply
  */
 class Message extends \yii\db\ActiveRecord
 {
@@ -89,5 +90,10 @@ class Message extends \yii\db\ActiveRecord
     public function getReplies()
     {
         return $this->hasMany(Message::class, ['reply_to_message_id' => 'id']);
+    }
+
+    public function getReply()
+    {
+        return $this->hasOne(Message::class, ['reply_to_message_id' => 'id']);
     }
 }

@@ -16,9 +16,6 @@ $this->title = 'Почта России';
 
     <?php if ($user->isAdmin): ?>
     <p>
-        <?= Html::a('Согласовать', ['view', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
-        <?= Html::a('Подписать', ['view', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
-
         <?= Html::a('Редактировать', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Удалить', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
@@ -30,7 +27,7 @@ $this->title = 'Почта России';
     </p>
     <?php endif; ?>
 
-    <?php if (!$model->reply_to_message_id): ?>
+    <?php if (!$model->reply_to_message_id && !$model->reply): ?>
     <p>
     <?php
     Modal::begin([
@@ -45,16 +42,19 @@ $this->title = 'Почта России';
     Modal::end();
     ?>
     </p>
+    <?php elseif (!$model->reply_to_message_id && $model->reply): ?>
+    <p>
+        <?= Html::a('Подписать ответ и отправить', ['view', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+    </p>
+
     <?php endif; ?>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
-            'message:ntext',
-            'user_id',
+            'message:html',
             'status',
-            'date_create',
+            'date_create:date',
         ],
     ]) ?>
 
