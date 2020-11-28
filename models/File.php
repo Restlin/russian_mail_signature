@@ -121,8 +121,8 @@ class File extends ActiveRecord {
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFileMessages()
+    public function getFileMessage()
     {
-        return $this->hasMany(MessageFile::className(), ['file_id' => 'id']);
+        return $this->hasOne(MessageFile::className(), ['file_id' => 'id']);
     }
 }

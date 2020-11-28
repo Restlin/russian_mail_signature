@@ -12,12 +12,13 @@ use yii\data\Sort;
  */
 class FileSearch extends File {
 
+    public $messageId = null;
     /**
      * {@inheritdoc}
      */
     public function rules() {
         return [
-            [['id', 'size', 'status', 'user_id'], 'integer'],
+            [['id', 'size', 'status', 'user_id', 'messageId'], 'integer'],
             [['name', 'mime'], 'safe'],
         ];
     }
@@ -39,6 +40,7 @@ class FileSearch extends File {
      */
     public function search($params) {
         $query = File::find();
+        $query->joinWith(['fileMessage mm']);
 
         // add conditions that should always apply here
 
@@ -68,6 +70,7 @@ class FileSearch extends File {
             'size' => $this->size,
             'status' => $this->status,
             'user_id' => $this->user_id,
+            'mm.message_id' => $this->messageId,
         ]);
 
         $query->andFilterWhere(['ilike', 'name', $this->name])

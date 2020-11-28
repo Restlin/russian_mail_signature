@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\FileSearch;
 use Yii;
 use app\models\Message;
 use app\models\MessageSearch;
@@ -52,8 +53,14 @@ class MessageController extends Controller
      */
     public function actionView($id)
     {
+        $searchModel = new FileSearch(['messageId' => $id]);
+        $dataProvider = $searchModel->search([]);
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'files' => $this->renderPartial('/file/index-files', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]),
         ]);
     }
 
