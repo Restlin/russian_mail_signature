@@ -65,6 +65,7 @@ body {
 }
 .navbar-nav > li > a {
     padding-top: 35px;
+    height: 90px;
 }
 
 
