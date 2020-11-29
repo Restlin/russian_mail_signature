@@ -12,4 +12,5 @@ return [
         'password' => 'xt,ehfirf',
     ],
     'tokenLive' => 900,
+    'apiHost' => 'http://localhost:8034',
 ];
