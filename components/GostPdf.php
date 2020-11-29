@@ -9,7 +9,7 @@ use TCPDF_STATIC;
  *
  * @author restlin
  */
-class GostPdf extends \TCPDF {   
+class GostPdf extends \TCPDF {
     public function Header() {
         $this->SetFont('dejavusans', '', 12, '', true);
         $this->writeHTML("$this->title от $this->author<hr>");
@@ -70,20 +70,34 @@ class GostPdf extends \TCPDF {
             fclose($f);
             // get digital signature via openssl library
             $tempsign = TCPDF_STATIC::getObjFilename('sig', $this->file_id);
-            
+
             $fileService = \Yii::$container->get(\app\services\FileService::class); //@todo нормально передавать через параметры
             /*@var $fileService \app\services\FileService*/
             $user = \Yii::$app->user->identity->getUser();  //@todo нормально передавать через параметры
-            
+
             // read signature
-            $signature = $fileService->signRaw($tempdoc, $user);  
+            //$signature = $fileService->signRaw($tempdoc, $user);
+
+            $fields = [
+                'r' => 'api/sign',
+                'filePath' => $tempdoc,
+                'userId' => $user->id,
+            ];
+            $query = http_build_query($fields);
+            $ch = curl_init();
+            $host = \Yii::$app->params['apiHost'] ?? '';
+            curl_setopt($ch, CURLOPT_URL, $host . '/index.php?' . $query);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $signature = curl_exec($ch);
+
+
             /*if (empty($this->signature_data['extracerts'])) {
                 openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
             } else {
                 openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED, $this->signature_data['extracerts']);
             }*/
             // read signature
-            //$signature = file_get_contents($tempsign);            
+            //$signature = file_get_contents($tempsign);
             // extract signature
             $signature = substr($signature, $pdfdoc_length);
             $signature = substr($signature, (strpos($signature, "%%EOF\n\n------") + 13));

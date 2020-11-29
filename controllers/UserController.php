@@ -213,7 +213,17 @@ class UserController extends Controller {
         if ($model->id != $this->user->id && !$model->isAdmin) {
             throw new ForbiddenHttpException('У Вас нет доступа к данному профилю!');
         }
-        $this->userESignService->create($model);
+        $fields = [
+            'r' => 'api/create',
+            'userId' => $model->id,
+        ];
+        $query = http_build_query($fields);
+        $ch = curl_init();
+        $host = Yii::$app->params['apiHost'] ?? '';
+        curl_setopt($ch, CURLOPT_URL, $host . '/index.php?' . $query);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $results = curl_exec($ch);
+        //$this->userESignService->create($model);
         return $this->redirect(['/user/view', 'id' => $this->user->id]);
     }
 
