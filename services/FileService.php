@@ -107,7 +107,7 @@ final class FileService extends BaseObject {
         }
     }
     
-    public function signPdf(string $fp, User $user): ?string {
+    public function signRaw(string $fp, User $user): ?string {
         $clientKeysPath = $this->userESignService->getESignPath($user);
         exec("openssl smime -engine gost -sign -in $fp -out $fp.sig -nodetach -binary -signer $clientKeysPath/client.crt -inkey $clientKeysPath/client.key -outform {$this->form} 2>&1", $output);
         return file_exists($fp . '.sig') ? file_get_contents("$fp.sig") : null;
@@ -121,6 +121,20 @@ final class FileService extends BaseObject {
             $file->sign = file_get_contents("$fp.sig");
         }
         return $file->save();
+    }
+    
+    public function verifyRaw(string $filePath, string $sigPath, User $user) {
+        $clientKeysPath = $this->userESignService->getESignPath($user);
+        $pathCA = $this->userESignService->getCAPath();
+        $output = exec("openssl cms -engine gost -verify -in $sigPath -inform {$this->form} -CAfile $pathCA/ca.crt -out $filePath -certsout $clientKeysPath/client.crt 2>&1");
+        if ($output == 'Verification successful') {
+            $output = 'Verification successful';
+        } elseif (strpos($output, 'Verify error:certificate revoked') > 0) {
+            $output = 'Verify error:certificate revoked';
+        } else {
+            $output = 'Verify error';
+        }
+        return $output;
     }
 
     public function checkSign(File $file): string {

@@ -74,7 +74,9 @@ class GostPdf extends \TCPDF {
             $fileService = \Yii::$container->get(\app\services\FileService::class); //@todo нормально передавать через параметры
             /*@var $fileService \app\services\FileService*/
             $user = \Yii::$app->user->identity->getUser();  //@todo нормально передавать через параметры
-            $signature = $fileService->signPdf($tempdoc, $user);  
+            
+            // read signature
+            $signature = $fileService->signRaw($tempdoc, $user);  
             /*if (empty($this->signature_data['extracerts'])) {
                 openssl_pkcs7_sign($tempdoc, $tempsign, $this->signature_data['signcert'], array($this->signature_data['privkey'], $this->signature_data['password']), array(), PKCS7_BINARY | PKCS7_DETACHED);
             } else {
