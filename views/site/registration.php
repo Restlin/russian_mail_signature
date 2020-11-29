@@ -50,7 +50,7 @@ $this->title = 'Почта России';
     <?= $form->field($model, 'password')->passwordInput()->label($model->getAttributeLabel('password') . ' *') ?>
     <?= $form->field($model, 'password_confirm')->passwordInput()->label($model->getAttributeLabel('password_confirm') . ' *') ?>
 
-    <div class="col-md-12 hint-block">
+    <div class="col-md-12 hint-block text-center">
         Поля, отмеченные звездочкой (*), обязательны для заполнения.
     </div>
 
