@@ -24,7 +24,7 @@
 </ul>
 
 <h4>Демо</h4>
-<p>Демо сервиса доступно по адресу: </p>
+<p>Демо сервиса доступно по адресу: http://restlin.keenetic.link:10080/index.php</p>
 <p>Реквизиты тестового пользователя: email: <b>testuser@test.ru</b>, пароль: <b>testuser</b></p>
 <p>Реквизиты тестового администратора: email: <b>admin@test.ru</b>, пароль: <b>xt,ehfirf</b></p>
 
